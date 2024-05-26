@@ -21,6 +21,8 @@ DAAR (Digital Asset and Revenue) and DAARION are smart contracts designed to cre
 
 ### DAAR Contract
 
+  ![DAAR Diagram](https://www.planttext.com/api/plantuml/svg/JO_12i8m38RlUOeSDz0Ny20RzYw8Fa2ecHIxjBGPmxUtbY8z1FuaNv8_KrPAkgqUpJpVBa4qaLKe4H8-CgSchxiK3R70phf8edK0uCVWyLmpFE4zaUIbb3IyMV8mGcqKe88T8An8QzX4_yXEthEQdbgOCNAoB4el1gW-kdk6emyVjCtuq5OSq8bJHxxo8qmip_Ba5m00)
+
 ```plantuml
 
 @startuml DAARContract
@@ -47,6 +49,8 @@ DAAR -> walletD : transfer fee
 - **Transfer Tokens**: When a token transfer occurs, a percentage of the tokens is automatically sent to `walletD`.
 
 ### DAARION Contract
+
+![DAARION Diagram](https://www.planttext.com/api/plantuml/svg/TP71JiCm38RlUGfV49jK97RWmW5jMYNWmYHKnDbhNJMgbqI9IxMtn-rQ630Y9RBipx_jU9q4etG7XdopUNtUlMozauYb6Bq-mbkYE9cxtgbjWlAsj06Tp3d6Z36uUPWzS0yv1VP7A2UzHO_C9AiCJaQUGOKO2z-Ioy0wAnPvb5aQCrJzgLP4TAbMhmm9QR4qSqonIVeSkxkz0ZpupibVCFy7DDVmJjJo4IgR9Dfz9zQxIxDznQcuqCutjsseRC7Mi89UbI5WIbJzPXLy907yGCkuPphDE7V5tWUezVy9omOQpvLk0VISgJoDtlEnGlJ1nw5_P4WDHZBaAhFMHvVz2G00)
 
 ```plantuml
 @startuml DAARIONContract
