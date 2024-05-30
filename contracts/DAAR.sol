@@ -18,7 +18,7 @@ contract DAAR is ERC20, ERC20Burnable, Pausable, Ownable {
     }
 
     function _transfer(address sender, address recipient, uint256 amount) internal override {
-        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]){
+        if (_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]) {
             super._transfer(sender, recipient, amount);
         } else {
             uint256 feeAmount = amount * transactionFee / 10000; // calculate 0.5% fee
@@ -44,7 +44,7 @@ contract DAAR is ERC20, ERC20Burnable, Pausable, Ownable {
     function distributeDAAR(address[] calldata recipients, uint256[] calldata amounts) external {
         require(msg.sender == distributor, "Only the authorized distributor can distribute DAAR");
         require(recipients.length == amounts.length, "Mismatched arrays");
-        
+
         for (uint256 i = 0; i < recipients.length; i++) {
             _transfer(walletD, recipients[i], amounts[i]);
         }

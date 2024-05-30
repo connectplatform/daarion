@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -10,6 +10,8 @@ contract DAARION is ERC20, ERC20Burnable, Pausable, Ownable {
     address public wallet1;
     uint256 public salesTax = 500; // 5%
     mapping(address => bool) private _isExcludedFromTax;
+    address[] internal _holders; // List of holders
+    mapping(address => bool) internal _isHolder; // Ensure no duplicates
 
     constructor(address _wallet1) ERC20("DAARION", "DAR") {
         wallet1 = _wallet1;
@@ -17,8 +19,25 @@ contract DAARION is ERC20, ERC20Burnable, Pausable, Ownable {
         _isExcludedFromTax[owner()] = true;
     }
 
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+        if (from != address(0) && balanceOf(from) == amount) {
+            // When transferring all tokens, remove the holder
+            _isHolder[from] = false;
+        }
+        if (to != address(0) && !_isHolder[to]) {
+            // Add new holder
+            _holders.push(to);
+            _isHolder[to] = true;
+        }
+        super._beforeTokenTransfer(from, to, amount);
+    }
+
+    function getHolders() external view returns (address[] memory) {
+        return _holders;
+    }
+
     function _transfer(address sender, address recipient, uint256 amount) internal override {
-        if(_isExcludedFromTax[sender] || _isExcludedFromTax[recipient]){
+        if (_isExcludedFromTax[sender] || _isExcludedFromTax[recipient]) {
             super._transfer(sender, recipient, amount);
         } else {
             uint256 taxAmount = amount * salesTax / 10000; // calculate 5% tax
