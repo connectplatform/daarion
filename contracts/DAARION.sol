@@ -13,7 +13,7 @@ contract DAARION is ERC20, ERC20Burnable, Pausable, Ownable {
     address[] internal _holders; // List of holders
     mapping(address => bool) internal _isHolder; // Ensure no duplicates
 
-    constructor(address _wallet1) ERC20("DAARION", "DAR") {
+    constructor(address _wallet1) ERC20("DAARION", "DAARION") {
         wallet1 = _wallet1;
         _isExcludedFromTax[wallet1] = true;
         _isExcludedFromTax[owner()] = true;
