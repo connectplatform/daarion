@@ -69,6 +69,11 @@ DAAR - це токен, який використовується для куп�
 	- Кошти у walletD розподіляються серед власників DAARION LP токенів, які застейкали їх у DAARDistributor.
   
 
+### Розширена діаграма функціоналу DAAR:
+
+![DAAR Diagram](https://www.planttext.com/api/plantuml/svg/XLJ1JkCm4BtxAqQSmYfquOgK5MK34XAeKYXdP999OwrZHnv7xFuzOzT9IWjQ7sBBy-RDi-SvD-IbysElXP2rjmvU25rQRjxDl2uLUQVUHbuBCN2AgjKWZOUpShskpa0Ib48K1MoTDDIYWqUxKpKKXH214Yv-GNaDFaMprja-1szpaBqTZJyNKdjGBIYw-rlhiS7cdY7tY1cXQT2T0wiu3Jfa7Ge30V0eKvtdSG1qgzUvtfuaXnc_54PD-2dvjzJrgAL7Q17N4GL5WiEF_HduLfGrh01-mjKbZsyO9W77D1SBzx7mBtM_IwtHb_cITdBW_vttinG-jsbYnvvK4CPzYlrEV3rlPeVjcGf5jBT_q11FG0CNQ1Ks89l68L6al1sTEQ5yuytic2uYztGnS_OPGZ1M93dmNifgPbG0BIQWII_DVbfYAurcvpkcd41f9rvaWdUIAginAn-UjzN3xSjsKxrMcyUx77hQhP8LOq8Osje1MfQ5ikwMKdFyi4DBR-PUVc76AIiq9ywJESCmbg_5gLtdmRR9Pnh3imWXaCkzy2kTM6Q6a-mdHRtqTHUQvvpyHtjBtF0t_10-0000)
+
+
 ## DAARDistributor Smart Contract
 
   
