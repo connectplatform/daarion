@@ -127,3 +127,9 @@ DAAR - це токен, який використовується для куп�
 
 7.  **Анстейкінг з APR**:
 	- Користувачі викликають функцію `unstakeAPR`, щоб вивести свої APR стейкані токени та отримати APR винагороду.
+
+### Діаграма
+
+![DAARDistributor Diagram](https://www.planttext.com/api/plantuml/svg/jLJRQjmm47tNLmnvSi3j1onioH8d40X9SReVCB6cQr5RDjAOXNvzTBEzQsz2GycBaJKpvo8V-SOo6XxQHWYik3EmjsJIylceftMXB1lrEhYr4BqRKPNgKJDS5RjTUGLeeH1YkuK7hLXXe_uIRBT210puzWEA3QYfbFcX7FppuVaf1-gxgduaVU0wXoCs3N5vBOeqDqDQu9gWwZGR9olmlH33dH-7EBzYjSHtCtnsGZKpx7k9J546DA4OmHd_q2Wp8FlZ6O5zCTKoRBj1yumu1CH0d8sxiNK3JhoslydScwxDMdluRabBCZcWb8QipRXMzjgzBZ2ZchWBg6KY0KD7DD86nNjjFz8yw4-hti0jDjNGUARU2LNwC36E7R-IetSQbiRFJIyqZ0uk-QowqUTjWwg5Cj8iNLQ-c6hP5xhpGgQB4Szy5JyvrNtv4seIYICrO6iqDFMSK9vz-dXAyJ9u6PUPvbplVfONC-ts5ydut-IMuSi5mi1m5jKBCb9Crq9E3yZFhNAsq9Z-9JcSYer3xtdxft1wxbYBQJmJ5PEt2kNOurfYHnQmpCVUu1KjIUWqoC4WAxVmLo8qk4uXRfnKz_z-0m00)
+
+    
