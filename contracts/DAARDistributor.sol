@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract DAARDistributor is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    IERC20Upgradeable public DAAR;
-    IERC20Upgradeable public DAARION;
+    ERC20Upgradeable public DAAR;
+    ERC20Upgradeable public DAARION;
     uint256 public epochLength;
     uint256 public currentEpoch;
-    address public walletR; // Reserve wallet for APR-based rewards
-    uint256 public apr = 4; // Fixed APR of 4%
 
     struct Stake {
         uint256 amount;
@@ -20,13 +18,7 @@ contract DAARDistributor is Initializable, OwnableUpgradeable, ReentrancyGuardUp
         uint256 rewardDebt; // Tracks pending rewards
     }
 
-    struct APRStake {
-        uint256 amount;
-        uint256 startTime;
-    }
-
     mapping(address => Stake) public stakes;
-    mapping(address => APRStake) public aprStakes;
     uint256 public totalStaked;
     uint256 public accRewardPerShare; // Accumulated rewards per staked token
 
@@ -34,19 +26,16 @@ contract DAARDistributor is Initializable, OwnableUpgradeable, ReentrancyGuardUp
     event EpochLengthSet(uint256 newEpochLength);
     event StakeEvent(address indexed user, uint256 amount);
     event UnstakeEvent(address indexed user, uint256 amount);
-    event APRStakeEvent(address indexed user, uint256 amount);
-    event APRUnstakeEvent(address indexed user, uint256 amount);
     event ClaimRewardsEvent(address indexed user, uint256 reward);
-    event APRRewardClaimed(address indexed user, uint256 reward);
 
-    function initialize(address _DAAR, address _DAARION, uint256 _epochLength, address _walletR) public initializer {
-        DAAR = IERC20Upgradeable(_DAAR);
-        DAARION = IERC20Upgradeable(_DAARION);
+    function initialize(address _DAAR, address _DAARION, uint256 _epochLength, address _owner) public initializer {
+        DAAR = ERC20Upgradeable(_DAAR);
+        DAARION = ERC20Upgradeable(_DAARION);
         epochLength = _epochLength;
-        walletR = _walletR;
         currentEpoch = block.timestamp / epochLength;
-        __Ownable_init();
+        __Ownable_init(_owner);
         __ReentrancyGuard_init();
+        transferOwnership(_owner);
     }
 
     function setEpochLength(uint256 _epochLength) external onlyOwner {
@@ -57,7 +46,7 @@ contract DAARDistributor is Initializable, OwnableUpgradeable, ReentrancyGuardUp
 
     function stakeDAARION(uint256 _amount) external nonReentrant {
         updateEpoch();
-        
+
         require(DAARION.transferFrom(msg.sender, address(this), _amount), "Transfer failed");
 
         Stake storage stakeRecord = stakes[msg.sender];
@@ -125,38 +114,5 @@ contract DAARDistributor is Initializable, OwnableUpgradeable, ReentrancyGuardUp
         if (newEpoch > currentEpoch) {
             currentEpoch = newEpoch;
         }
-    }
-
-    // APR-based staking functions
-    function stakeAPR(uint256 _amount) external nonReentrant {
-        require(DAARION.transferFrom(msg.sender, address(this), _amount), "Transfer failed");
-
-        APRStake storage aprStakeRecord = aprStakes[msg.sender];
-        aprStakeRecord.amount += _amount;
-        aprStakeRecord.startTime = block.timestamp;
-
-        emit APRStakeEvent(msg.sender, _amount);
-    }
-
-    function unstakeAPR(uint256 _amount) external nonReentrant {
-        APRStake storage aprStakeRecord = aprStakes[msg.sender];
-        require(aprStakeRecord.amount >= _amount, "Insufficient staked amount");
-
-        uint256 reward = calculateAPRReward(msg.sender);
-        require(DAAR.balanceOf(walletR) >= reward, "Insufficient reward balance in walletR");
-        require(DAAR.transferFrom(walletR, msg.sender, reward), "Reward transfer failed");
-
-        aprStakeRecord.amount -= _amount;
-        require(DAARION.transfer(msg.sender, _amount), "Transfer failed");
-
-        emit APRUnstakeEvent(msg.sender, _amount);
-        emit APRRewardClaimed(msg.sender, reward);
-    }
-
-    function calculateAPRReward(address staker) public view returns (uint256) {
-        APRStake memory aprStakeRecord = aprStakes[staker];
-        uint256 stakingDuration = block.timestamp - aprStakeRecord.startTime;
-        uint256 reward = (aprStakeRecord.amount * apr * stakingDuration) / (100 * 365 days);
-        return reward;
     }
 }
