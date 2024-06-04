@@ -192,7 +192,7 @@ D -> D: Calculate APR reward based on duration and APR rate
 7.  **Анстейкінг з APR**:
 	- Користувачі викликають функцію `unstakeAPR`, щоб вивести свої APR стейкані токени та отримати APR винагороду.
 
-    
+
 
 # Контракт APRStaking
 
@@ -243,7 +243,7 @@ D -> D: Calculate APR reward based on duration and APR rate
 ## Функціонал та Особливості  
 
 ### Алгоритм смарт-контракту:
-![ARPstaking Algorithm](https://www.planttext.com/api/plantuml/svg/VLBDJeGm4BxtAUO82Ru0nhYuQh8NDI0FqD11YQMGTheRtzu1AWAYNA3mpNn_71n9IxxLOdmG8kNx1sOlUIJRpXkAhqLALXfNetsqNHkL3cq232WOs9Yt16PWKqFq6h1G-Af2vsglRsEWTpGGVQAB1V2LvbXrLi6m0Y4m9K1DYqpVzhnhX9MzaeH07KazOjLzbkMdvwVmFQZ0XpCQ2ifcDQWTxpRTJ7b6I_pQgAPcdzxyTZeOc3GLlgwRgk6rE-gFKbTU3yfol4YhWffLJ1UfDLAUmAJAZi3WQw2P9k5EQccg__cMKQmIWwiR23P-R6yd_Wfl9NcRtGpWUCg9OJVZ9MvoTDIIMrJHZkrr8OjI83ePDmSGGlqU6klQxN8pDdgCvu8TTRquy67ukRy0)
+![ARPstaking Algorithm](https://www.planttext.com/api/plantuml/svg/VLBDJeGm4BxtAUO82Ru0nhYuQh8NDI0FqC2WZQMGTheRtzu1AWAYNA3mpNn_71n9IxxLGenFGgHy_y3i9Ozastb3yRL8oKhZ6hIFjckZqg5DW0450vLvIs06gWQYru25mbSLEjTuVHi3lQE1w1DTB82lDCUgipKCAn02KmAaMcJwjkTT8wpiQqa8r97K8xQ-pxByzFmKlWSL-716Gq7Ph0QruzsccodFQ8bVcrerxDERtqu70vEcmZUDgXIltL5_bBhoUb2MuqNQEgXPnNIHMYFb2Kogx0WClWQQQHBkf9Qc-fzl6SKgCRYwWM3Zn_Psug_mLfAtsSq0ZgUS67OpNk8cHqSjkSKwsh6zBcHH2aGdu-O0GgZVGsDTkrrknaQFyLomewuN1puCV_SN)
 
 <details><title>UML code</title>
 
