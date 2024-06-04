@@ -268,7 +268,50 @@ D -> D: Calculate APR reward based on duration and APR rate
 
 ---
 
-### Функціонал та Особливості  
+## Функціонал та Особливості  
+
+### Алгоритм смарт-контракту:
+![ARPstaking Algorithm](https://www.planttext.com/api/plantuml/svg/VLBDJeGm4BxtAUO82Ru0nhYuQh8NDI0FqD11YQMGTheRtzu1AWAYNA3mpNn_71n9IxxLOdmG8kNx1sOlUIJRpXkAhqLALXfNetsqNHkL3cq232WOs9Yt16PWKqFq6h1G-Af2vsglRsEWTpGGVQAB1V2LvbXrLi6m0Y4m9K1DYqpVzhnhX9MzaeH07KazOjLzbkMdvwVmFQZ0XpCQ2ifcDQWTxpRTJ7b6I_pQgAPcdzxyTZeOc3GLlgwRgk6rE-gFKbTU3yfol4YhWffLJ1UfDLAUmAJAZi3WQw2P9k5EQccg__cMKQmIWwiR23P-R6yd_Wfl9NcRtGpWUCg9OJVZ9MvoTDIIMrJHZkrr8OjI83ePDmSGGlqU6klQxN8pDdgCvu8TTRquy67ukRy0)
+
+<details><title>UML code</title>
+
+```plantuml
+
+@startuml
+start
+
+:stakeAPR(amount);
+:transferFrom(User, APRStaking, amount);
+if (Transfer Successful?) then (yes)
+    :Record Stake (amount, timestamp);
+    :Update totalStakedDAARION;
+    :APRStakeEvent(User, amount);
+else (no)
+    :Revert;
+endif
+
+:unstakeAPR(amount);
+if (Stake Sufficient?) then (yes)
+    :Calculate Reward;
+    :transferFrom(walletR, User, reward);
+    if (Reward Balance Sufficient?) then (yes)
+        :Update Stake (amount -= unstake amount);
+        :Update totalStakedDAARION;
+        :transfer(User, amount);
+        :APRUnstakeEvent(User, amount);
+        :APRRewardClaimed(User, reward);
+    else (no)
+        :Revert (Insufficient Reward);
+    endif
+else (no)
+    :Revert (Insufficient Stake);
+endif
+
+stop
+@enduml
+
+```
+</details>
 
 1. **Основні функції**
 
@@ -332,6 +375,8 @@ D -> D: Calculate APR reward based on duration and APR rate
         ```
 
 Цей контракт дозволяє користувачам ефективно ставити свої токени `DAARION` та отримувати винагороди у вигляді токенів `DAAR` на основі фіксованої річної процентної ставки.
+
+### Діаграма функціоналу смарт-контракту:
 
 ![ARPstaking Diagram](https://www.planttext.com/api/plantuml/svg/dLH1ReCm4BppYZqIYNmWKgkaQIFbqbQWF61bRreKOv2zJjJVrmwGGY2XBISOcF7ix2vBosZO5If2mQM1dIKJLHxAHLwXPbYzfndZ8TSVFVXvjKgtRwy3B8g20imVEyG5-4CEv84OYz9fdeN3yYCoTUL_RWEzEM01R53RFPcDAOiuY2STKW8NHSMGEI78sWZyrLVhcab9b4P2U2Pe72N0UK7UPb7D9kYxIWRZN3AgiuPiinZoWjr5Yz7BaJGt9RIsILc23URA6RefaDAH34UaPIHfBBhHq9t-H-nTWVKdYKEJK-RsUzzdqkBh7FLMsnRX-fC9zn0FAKtvsRHIpnOguLIe8gKJ6ZdoUUZ8rUISK2dYD84wVtEcrhqUr5FhmXCgrAAsywVYqexuTONtHKS6hJUdC7ze-tePeLyhtHZPyVXwktSrjFS2yTYkDZWsxXFCEhYrGh-CCXvsAcp0xIrO-bVXJ_OD)
 
