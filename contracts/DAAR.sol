@@ -24,8 +24,9 @@ contract DAAR is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Owna
     event Mint(address indexed to, uint256 amount);
     event Burn(address indexed from, uint256 amount);
     event DAARDistributed(address indexed distributor, address[] recipients, uint256[] amounts);
+    event TransferWithFee(address indexed sender, address indexed recipient, uint256 amount, uint256 feeAmount);
 
-    function initialize(address _walletD, address _owner) initializer public {
+    function initialize(address _walletD, address _owner, address _walletR) initializer public {
         __ERC20_init("DAAR", "DAAR");
         __ERC20Burnable_init();
         __Ownable_init(_owner);
@@ -35,6 +36,8 @@ contract DAAR is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Owna
         walletD = _walletD;
         transactionFee = 50; // 0.5%
         isExcludedFromFee[_owner] = true;
+        isExcludedFromFee[_walletD] = true;
+        isExcludedFromFee[_walletR] = true;
         _grantRole(DEFAULT_ADMIN_ROLE, _owner);
         _grantRole(DISTRIBUTOR_ROLE, _walletD);
     }
