@@ -333,7 +333,7 @@ D -> D: Calculate APR reward based on duration and APR rate
 
 Цей контракт дозволяє користувачам ефективно ставити свої токени `DAARION` та отримувати винагороди у вигляді токенів `DAAR` на основі фіксованої річної процентної ставки.
 
-![ARPstaking Diagram](https://www.planttext.com/api/plantuml/svg/dLH1Ri8m4Bpx5NiCKlW0KYieBHANjdB40ondQICS9xBNeFw-DaweGr9GcrCoySxEhCTUMXA6NAsOaDGOs5aqhFLG9QjMQ8BLEoz872hzCO2VLok-VNiTOOm51fW_9eKBy4qEw85Cr8tJD0lDggCWJEb_NaDvrs01P8IsUpGRqzHP8C-JeXmkZ8gWS5AYjGpyCsHBnN2KZIaXV2DqYdAWgaOlisvd4-MXxQB7yEM8cZefVNjK5c4ZAkKC_ah0yOY66EgIbJWrWidXEVsFyQK4wq-KXyvluVPxlr-evTTvP5jjUuJYaZlg8HkNTFQB-qm3MK99fu8BZYTXoedb8GHN2JW9fP1u3d7-vbmQzspa9_B2ar12ooZdJ-PuGdxjy3PfwdFNbi7a86ymV-ZtzHAXQQRHERWAtYrJ7jl59bEHlLCPpQ-Ly0UZpCRJ3Yc-aUIb_nUkbMy0)
+![ARPstaking Diagram](https://www.planttext.com/api/plantuml/svg/dLH1ReCm4BppYZqIYNmWKgkaQIFbqbQWF61bRreKOv2zJjJVrmwGGY2XBISOcF7ix2vBosZO5If2mQM1dIKJLHxAHLwXPbYzfndZ8TSVFVXvjKgtRwy3B8g20imVEyG5-4CEv84OYz9fdeN3yYCoTUL_RWEzEM01R53RFPcDAOiuY2STKW8NHSMGEI78sWZyrLVhcab9b4P2U2Pe72N0UK7UPb7D9kYxIWRZN3AgiuPiinZoWjr5Yz7BaJGt9RIsILc23URA6RefaDAH34UaPIHfBBhHq9t-H-nTWVKdYKEJK-RsUzzdqkBh7FLMsnRX-fC9zn0FAKtvsRHIpnOguLIe8gKJ6ZdoUUZ8rUISK2dYD84wVtEcrhqUr5FhmXCgrAAsywVYqexuTONtHKS6hJUdC7ze-tePeLyhtHZPyVXwktSrjFS2yTYkDZWsxXFCEhYrGh-CCXvsAcp0xIrO-bVXJ_OD)
 
 <details><title>UML code</title>
 
@@ -350,6 +350,7 @@ activate APRStaking
 APRStaking -> DAARION: transferFrom(User, APRStaking, amount)
 alt Success
     APRStaking -> APRStaking: Record Stake (amount, timestamp)
+    APRStaking -> APRStaking: Update totalStakedDAARION
     APRStaking -> User: APRStakeEvent(User, amount)
 else Failure
     APRStaking -> User: Revert
@@ -368,13 +369,13 @@ else Sufficient Stake
         APRStaking -> User: Revert (Insufficient Reward)
     else Sufficient Balance
         APRStaking -> APRStaking: Update Stake (amount -= unstake amount)
+        APRStaking -> APRStaking: Update totalStakedDAARION
         APRStaking -> DAARION: transfer(User, amount)
         APRStaking -> User: APRUnstakeEvent(User, amount)
         APRStaking -> User: APRRewardClaimed(User, reward)
     end
 end
 deactivate APRStaking
-
 @enduml
 
 ```
