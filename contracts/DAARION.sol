@@ -2,55 +2,68 @@
 pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-contract DAARION is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
+contract DAARION is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+    bytes32 public constant APR_DISTRIBUTOR_ROLE = keccak256("APR_DISTRIBUTOR_ROLE");
+
     address public wallet1;
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
-    uint256 public salesTax; // 5% in basis points (500 basis points = 5%)
+    uint256 public salesTax;
     mapping(address => bool) private _isExcludedFromTax;
-
-    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
 
     event SalesTaxSet(uint256 newTax);
     event Wallet1Set(address newWallet);
     event ExcludedFromTax(address account);
     event IncludedInTax(address account);
-    event Mint(address indexed to, uint256 amount);
-    event Burn(address indexed from, uint256 amount);
-    event DAARIONDistributed(address indexed distributor, address[] recipients, uint256[] amounts);
+    event TransferWithTax(address indexed sender, address indexed recipient, uint256 amount, uint256 taxAmount);
 
-    function initialize(address _wallet1, address _distributor, address initialOwner) initializer public {
+    function initialize(address _wallet1, address _owner) initializer public {
         __ERC20_init("DAARION", "DAARION");
         __ERC20Burnable_init();
-        __Ownable_init(initialOwner);
-        __ReentrancyGuard_init();
+        __Ownable_init(_owner);
+        __Pausable_init();
         __AccessControl_init();
+        __ReentrancyGuard_init();
 
         wallet1 = _wallet1;
         salesTax = 500; // 5%
-        _isExcludedFromTax[wallet1] = true;
-        _isExcludedFromTax[initialOwner] = true;
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
-        _grantRole(DISTRIBUTOR_ROLE, _distributor);
 
-        // Set the initial owner
-        transferOwnership(initialOwner);
+        _isExcludedFromTax[_owner] = true;
+        _isExcludedFromTax[wallet1] = true;
+
+        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
     }
 
-    function transferWithFee(address sender, address recipient, uint256 amount) public {
-        require(sender == _msgSender(), "Not authorized");
-        if (_isExcludedFromTax[sender] || _isExcludedFromTax[recipient]) {
+    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+        _transferWithTax(_msgSender(), recipient, amount);
+        return true;
+    }
+
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+        uint256 currentAllowance = allowance(sender, _msgSender());
+        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
+        _transferWithTax(sender, recipient, amount);
+        _approve(sender, _msgSender(), currentAllowance - amount);
+        return true;
+    }
+
+    function _transferWithTax(address sender, address recipient, uint256 amount) internal {
+        require(amount <= balanceOf(sender), "ERC20: transfer amount exceeds balance");
+
+        if (_isExcludedFromTax[sender]) {
             _transfer(sender, recipient, amount);
         } else {
-            uint256 taxAmount = amount * salesTax / 10000; // calculate 5% tax
+            uint256 taxAmount = (amount * salesTax) / 10000;
             uint256 transferAmount = amount - taxAmount;
-            _transfer(sender, BURN_ADDRESS, taxAmount); // transfer tax amount to burn address
+            _transfer(sender, BURN_ADDRESS, taxAmount); // Burn the tax amount
             _transfer(sender, recipient, transferAmount);
+            emit TransferWithTax(sender, recipient, transferAmount, taxAmount);
         }
     }
 
@@ -77,20 +90,17 @@ contract DAARION is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, O
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
-        emit Mint(to, amount);
     }
 
     function burn(uint256 amount) public override onlyOwner {
         _burn(_msgSender(), amount);
-        emit Burn(_msgSender(), amount);
     }
 
-    function distributeDAARION(address[] calldata recipients, uint256[] calldata amounts) external {
-        require(hasRole(DISTRIBUTOR_ROLE, msg.sender), "Caller is not a distributor");
-        require(recipients.length == amounts.length, "Mismatched arrays");
-        for (uint256 i = 0; i < recipients.length; i++) {
-            transferWithFee(wallet1, recipients[i], amounts[i]);
-        }
-        emit DAARIONDistributed(msg.sender, recipients, amounts);
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
     }
 }

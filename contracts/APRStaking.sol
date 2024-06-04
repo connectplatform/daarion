@@ -18,6 +18,7 @@ contract APRStaking is Initializable, OwnableUpgradeable, ReentrancyGuardUpgrade
     }
 
     mapping(address => APRStake) public aprStakes;
+    uint256 public totalStakedDAARION; // Total staked DAARION
 
     event APRStakeEvent(address indexed user, uint256 amount);
     event APRUnstakeEvent(address indexed user, uint256 amount);
@@ -39,6 +40,7 @@ contract APRStaking is Initializable, OwnableUpgradeable, ReentrancyGuardUpgrade
         aprStakeRecord.amount += _amount;
         aprStakeRecord.startTime = block.timestamp;
 
+        totalStakedDAARION += _amount; // Update total staked DAARION
         emit APRStakeEvent(msg.sender, _amount);
     }
 
@@ -53,6 +55,7 @@ contract APRStaking is Initializable, OwnableUpgradeable, ReentrancyGuardUpgrade
         aprStakeRecord.amount -= _amount;
         require(DAARION.transfer(msg.sender, _amount), "Transfer failed");
 
+        totalStakedDAARION -= _amount; // Update total staked DAARION
         emit APRUnstakeEvent(msg.sender, _amount);
         emit APRRewardClaimed(msg.sender, reward);
     }
@@ -62,5 +65,9 @@ contract APRStaking is Initializable, OwnableUpgradeable, ReentrancyGuardUpgrade
         uint256 stakingDuration = block.timestamp - aprStakeRecord.startTime;
         uint256 reward = (aprStakeRecord.amount * apr * stakingDuration) / (100 * 365 days);
         return reward;
+    }
+
+    function getTotalStakedDAARION() external view returns (uint256) {
+        return totalStakedDAARION;
     }
 }
