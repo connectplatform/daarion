@@ -71,10 +71,9 @@ DAAR - це токен, який використовується для куп�
 
 ### Розширена діаграма функціоналу DAAR:
 
-![DAAR Diagram](https://www.planttext.com/api/plantuml/svg/XLJ1JkCm4BtxAqQSmYfquOgK5MK34XAeKYXdP999OwrZHnv7xFuzOzT9IWjQ7sBBy-RDi-SvD-IbysElXP2rjmvU25rQRjxDl2uLUQVUHbuBCN2AgjKWZOUpShskpa0Ib48K1MoTDDIYWqUxKpKKXH214Yv-GNaDFaMprja-1szpaBqTZJyNKdjGBIYw-rlhiS7cdY7tY1cXQT2T0wiu3Jfa7Ge30V0eKvtdSG1qgzUvtfuaXnc_54PD-2dvjzJrgAL7Q17N4GL5WiEF_HduLfGrh01-mjKbZsyO9W77D1SBzx7mBtM_IwtHb_cITdBW_vttinG-jsbYnvvK4CPzYlrEV3rlPeVjcGf5jBT_q11FG0CNQ1Ks89l68L6al1sTEQ5yuytic2uYztGnS_OPGZ1M93dmNifgPbG0BIQWII_DVbfYAurcvpkcd41f9rvaWdUIAginAn-UjzN3xSjsKxrMcyUx77hQhP8LOq8Osje1MfQ5ikwMKdFyi4DBR-PUVc76AIiq9ywJESCmbg_5gLtdmRR9Pnh3imWXaCkzy2kTM6Q6a-mdHRtqTHUQvvpyHtjBtF0t_10-0000)
+![DAAR Diagram](https://www.planttext.com/api/plantuml/svg/jLJRQjmm47tNLmnvSi3j1onioH8d40X9SReVCB6cQr5RDjAOXNvzTBEzQsz2GycBaJKpvo8V-SOo6XxQHWYik3EmjsJIylceftMXB1lrEhYr4BqRKPNgKJDS5RjTUGLeeH1YkuK7hLXXe_uIRBT210puzWEA3QYfbFcX7FppuVaf1-gxgduaVU0wXoCs3N5vBOeqDqDQu9gWwZGR9olmlH33dH-7EBzYjSHtCtnsGZKpx7k9J546DA4OmHd_q2Wp8FlZ6O5zCTKoRBj1yumu1CH0d8sxiNK3JhoslydScwxDMdluRabBCZcWb8QipRXMzjgzBZ2ZchWBg6KY0KD7DD86nNjjFz8yw4-hti0jDjNGUARU2LNwC36E7R-IetSQbiRFJIyqZ0uk-QowqUTjWwg5Cj8iNLQ-c6hP5xhpGgQB4Szy5JyvrNtv4seIYICrO6iqDFMSK9vz-dXAyJ9u6PUPvbplVfONC-ts5ydut-IMuSi5mi1m5jKBCb9Crq9E3yZFhNAsq9Z-9JcSYer3xtdxft1wxbYBQJmJ5PEt2kNOurfYHnQmpCVUu1KjIUWqoC4WAxVmLo8qk4uXRfnKz_z-0m00)
 
-<details>
-<title>UML-код</title>
+<details><title>UML-код</title>
 
 @startuml
 
@@ -151,19 +150,14 @@ D -> D: Calculate APR reward based on duration and APR rate
 
 </details>
 
-## DAARDistributor Smart Contract
 
-  
+# DAARDistributor.sol Smart Contract
 
-### Опис
-
-  
+## Опис 
 
 `DAARDistributor` — це смарт-контракт, створений для керування стейкінгом і розподілом винагород у токенах DAAR і DAARION. Контракт також підтримує стейкінг з фіксованою річною процентною ставкою (APR), забезпечуючи стабільні винагороди для користувачів. Цей контракт пропонує гнучкість, безпеку та прозорість операцій.
 
-  
-
-### Особливості
+## Особливості
 
 -  **Стейкінг DAARION** — користувачі можуть стейкати токени DAARION для отримання винагород у DAAR.
 -  **Анстейкінг DAARION** — користувачі можуть вивести свої стейкані токени DAARION та отримати накопичені винагороди.
@@ -172,11 +166,7 @@ D -> D: Calculate APR reward based on duration and APR rate
 -  **Стейкінг з APR** — користувачі можуть стейкати токени DAARION для отримання винагород із фіксованою річною процентною ставкою.
 -  **Анстейкінг з APR** — користувачі можуть вивести свої APR стейкані токени DAARION та отримати APR винагороду.
 
-  
-
-### Переваги
-
-  
+## Переваги
 
 -  **Безпека** — Контракт включає захист від повторних атак за допомогою ReentrancyGuard.
 -  **Гнучкість** — Власник контракту може змінювати тривалість епох та інші параметри.
@@ -184,45 +174,27 @@ D -> D: Calculate APR reward based on duration and APR rate
 -  **Стабільні винагороди** — Можливість отримувати винагороди з фіксованою річною процентною ставкою (APR).
 -  **Автоматичне розподілення** — Контракт автоматично керує винагородами та їх розподілом.
 
-  
-
-### Використання
+## Параметри
 
 
 1.  **Ініціалізація**:
 	- Власник контракту викликає функцію `initialize`, щоб налаштувати початкові параметри.
-
 2.  **Стейкінг DAARION**:
 	- Користувачі викликають функцію `stakeDAARION`, щоб стейкати токени DAARION та отримувати винагороди.
-
 3.  **Анстейкінг DAARION**:
 	- Користувачі викликають функцію `unstakeDAARION` для виведення стейканих токенів.
-
 4.  **Отримання винагород**:
 	- Користувачі викликають функцію `claimRewards`, щоб отримати свої накопичені винагороди.
-
 5.  **Розподіл винагород**:
 	- Власник контракту викликає функцію `distributeDAAR`, щоб розподілити накопичені винагороди серед користувачів.
-
 6.  **Стейкінг з APR**:
 	- Користувачі викликають функцію `stakeAPR`, щоб стейкати токени DAARION для отримання APR винагород.
-
 7.  **Анстейкінг з APR**:
 	- Користувачі викликають функцію `unstakeAPR`, щоб вивести свої APR стейкані токени та отримати APR винагороду.
 
-### Діаграма
-
-![DAARDistributor Diagram](https://www.planttext.com/api/plantuml/svg/jLJRQjmm47tNLmnvSi3j1onioH8d40X9SReVCB6cQr5RDjAOXNvzTBEzQsz2GycBaJKpvo8V-SOo6XxQHWYik3EmjsJIylceftMXB1lrEhYr4BqRKPNgKJDS5RjTUGLeeH1YkuK7hLXXe_uIRBT210puzWEA3QYfbFcX7FppuVaf1-gxgduaVU0wXoCs3N5vBOeqDqDQu9gWwZGR9olmlH33dH-7EBzYjSHtCtnsGZKpx7k9J546DA4OmHd_q2Wp8FlZ6O5zCTKoRBj1yumu1CH0d8sxiNK3JhoslydScwxDMdluRabBCZcWb8QipRXMzjgzBZ2ZchWBg6KY0KD7DD86nNjjFz8yw4-hti0jDjNGUARU2LNwC36E7R-IetSQbiRFJIyqZ0uk-QowqUTjWwg5Cj8iNLQ-c6hP5xhpGgQB4Szy5JyvrNtv4seIYICrO6iqDFMSK9vz-dXAyJ9u6PUPvbplVfONC-ts5ydut-IMuSi5mi1m5jKBCb9Crq9E3yZFhNAsq9Z-9JcSYer3xtdxft1wxbYBQJmJ5PEt2kNOurfYHnQmpCVUu1KjIUWqoC4WAxVmLo8qk4uXRfnKz_z-0m00)
-
     
 
-## APRStaking Контракт
-
-Звичайно, ось простий пояснювальний текст на українській мові, зрозумілий для органічних фермерів:
-
----
-
-## Контракт APRStaking
+# Контракт APRStaking
 
 Контракт `APRStaking` допомагає фермерам отримувати винагороди за зберігання своїх токенів `DAARION`. Коли ви ставите свої токени `DAARION` у цей контракт, ви отримуєте додаткові токени `DAAR` як винагороду.
 
