@@ -1,0 +1,48 @@
+# Your Title
+
+Here is an example of an SVG image embedded directly into the markdown:
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="353px" preserveAspectRatio="none" style="width:412px;height:353px;background:#FFFFFF;" version="1.1" viewBox="0 0 412 353" width="412px" zoomAndPan="magnify">
+    <defs/>
+    <g>
+        <rect fill="none" height="46.2656" style="stroke:#000000;stroke-width:1.5;" width="309.5" x="96.5" y="209.8281"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="24" x2="24" y1="81.2969" y2="273.0938"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="132.5" x2="132.5" y1="81.2969" y2="273.0938"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="201.5" x2="201.5" y1="81.2969" y2="273.0938"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="359" x2="359" y1="81.2969" y2="273.0938"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="5" y="77.9951">User</text>
+        <ellipse cx="24" cy="13.5" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/>
+        <path d="M24,21.5 L24,48.5 M11,29.5 L37,29.5 M24,48.5 L11,63.5 M24,48.5 L37,63.5" fill="none" style="stroke:#181818;stroke-width:0.5;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="5" y="285.0889">User</text>
+        <ellipse cx="24" cy="296.8906" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/>
+        <path d="M24,304.8906 L24,331.8906 M11,312.8906 L37,312.8906 M24,331.8906 L11,346.8906 M24,331.8906 L37,346.8906" fill="none" style="stroke:#181818;stroke-width:0.5;"/>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="53" x="106.5" y="50"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="39" x="113.5" y="69.9951">DAAR</text>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="53" x="106.5" y="272.0938"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="39" x="113.5" y="292.0889">DAAR</text>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="64" x="169.5" y="50"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="50" x="176.5" y="69.9951">walletD</text>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="64" x="169.5" y="272.0938"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="50" x="176.5" y="292.0889">walletD</text>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="74" x="322" y="50"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="329" y="69.9951">recipient</text>
+        <rect fill="#E2E2F0" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="74" x="322" y="272.0938"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="329" y="292.0889">recipient</text>
+        <polygon fill="#181818" points="121,108.4297,131,112.4297,121,116.4297,125,112.4297" style="stroke:#181818;stroke-width:1.0;"/>
+        <line style="stroke:#181818;stroke-width:1.0;" x1="24" x2="127" y1="112.4297" y2="112.4297"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="85" x="31" y="107.3638">send amount</text>
+        <polygon fill="#181818" points="189.5,161.6953,199.5,165.6953,189.5,169.6953,193.5,165.6953" style="stroke:#181818;stroke-width:1.0;"/>
+        <line style="stroke:#181818;stroke-width:1.0;" x1="133" x2="195.5" y1="165.6953" y2="165.6953"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="20" x="140" y="160.6294">fee</text>
+        <polygon fill="#181818" points="347,190.8281,357,194.8281,347,198.8281,351,194.8281" style="stroke:#181818;stroke-width:1.0;"/>
+        <line style="stroke:#181818;stroke-width:1.0;" x1="133" x2="353" y1="194.8281" y2="194.8281"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="118" x="140" y="189.7622">remaining amount</text>
+        <path d="M96.5,209.8281 L160.5,209.8281 L160.5,216.9609 L150.5,226.9609 L96.5,226.9609 L96.5,209.8281" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+        <rect fill="none" height="46.2656" style="stroke:#000000;stroke-width:1.5;" width="309.5" x="96.5" y="209.8281"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="19" x="111.5" y="222.895">alt</text>
+        <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="187" x="175.5" y="222.0386">[Wallet is excluded from fee]</text>
+        <polygon fill="#181818" points="347,244.0938,357,248.0938,347,252.0938,351,248.0938" style="stroke:#181818;stroke-width:1.0;"/>
+        <line style="stroke:#181818;stroke-width:1.0;" x1="133" x2="353" y1="248.0938" y2="248.0938"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="202" x="140" y="243.0278">transfer full amount to recipient</text>
+    </g>
+</svg>
