@@ -15,7 +15,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 - **Upgradeable**: Supports role-based access and upgradeability.
 #### How it works:
 
-![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-concept.svg)
+![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-concept.en-US.svg)
 
 ### DAARION
 - **ERC20 Compliant**: Standard ERC20 token functionalities.
@@ -38,23 +38,23 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 
 ### DAAR Contract
 
-![DAAR Diagram](DAAR-flow.svg)
+![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-flow.en-US.svg)
 
 ---
 
 ### DAARION Contract
 
-![DAARION Diagram](https://www.plantuml.com/plantuml/svg/hLLHQzim47xthxYNWJDIiZxiPIobwTf17jQE9g6FvIfVgAWi1-cyXFtwIRBYkiPA4zP0iC3VVNVVzqdofMKqN9SAhcUp-_dTxOzAiq71cVjN1bQMJ5pURRLRPnk7bq9kKFE-1j3kbrasdS9SIvQev5zaMMcOJhDG2sSNRSKta7iGvLjKYlXy39M7ZR88UejlIGb4d14i8rDekJIexThrs4f-XYNkVDULxJVb2CiDEGcID8y1owhMFCfGCIn85wv6Mg2TK7L11QnDLGBZBWFtwqpMCdHe8rT6obA7IrVyFj_LwlxsSNPzVN-pM7GeFNGMM277vlaPB2goNkG4ph-ut-Y4uU3ibR9VvWrp5LHARXrzS8RwLlI7l39TlFNRopdIz9yEcjlWoXW60XYCNJoJU05KgjgY5WIe2tX2vTSXiTdG6x3rUYs5f2Znc6XFYDT3ZuxumsF-ZwXFZjiN-CXxXJx4K5gGC8IMNWCAUx-JIcNQKAJkn38yYd5j3JSwKFZRezrn2t8PUaFyHalSAPPu4JtBdV9mfWFy-nI-VkhrxDJLcmAPMh_xGD-fDMhVmCqJJGgAVPSBtoHH-uwoX-OAJEkAWFrTESeE2OcWBAKXahKImXWtpVQTp7LuDhiuxJKrS7-elTqeH7kAatCzIXkx5BswCR2fQPISk5SMnnx-hWJaN7_8L6jKzi1OqQiYTEju-KjgdbpLHiEoUY5j4nwM3fPpbRu2MnHmu1bK_EJwv6c6Y8WCORpVM5kQhFJ6FnEpXNTvWh0fZD_XuHngVP2XrdsEIz95NQf_)
+![DAARION Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAARION-flow.en-US.svg)
 
 ---
 ### DAARDistributor Contract
 
-![DAAR Diagram](https://www.plantuml.com/plantuml/svg/pLL1Rjim4Bpp5NjK0VS30Lp4S1p0G94KTlM0DRMEYLAaG2uTeAylI9EHAiIHt5voiysPqUpCMhptZ8v3g-5XjTezACzE7G9RjxQ67KeMADawg3sv_F7vrP0JeaF7IgeE3O-vW7xyan3B9MoDOeLQ_KPMri1oAP8MVFqsXiCTg0AcAXuk4cJx_BG0wgmyVIVpmgS5sAZmHOpvxqdspoUGUJpmZ4p9tPuODb4QBjeJ_ZpnfZTI3KpDT5Dt3J918e9EpFU8qKA4KwiO1a-CTkbCXY_c6NzHYIWwh_rLun6QaHMsDXY-wZYAtG4xDFv8xj7Pjeh2Yx7i0eeGQeQV6G_x82LvVmnQ003S4ajo2OwaTStDPBQCEaLobLlxFjM4tAGiINlg_J-YqfCIEpgJuqj8AEDc2p9DQgKsVdulmOoQwGFTX-DHIKKcUvqVo1gr33fcqf5fb7a1Hw_e6l-HnA3o0WUsQTv2crwMl165-9aN8FOqMe6jyJCpdzw2jKRLmYu7-U4Eo0ZDoEhI_O_SM-6lpgWq7ZJzLuFpiynyQEZ0Sx9S3qOO1FfafoUO7-aRWH9_ubNTlA7ZMVKFxsTnuv-jPDwH0tz2H_C4ohTUOV96-EkScd8bt9DfGgl_0000)
+![DAARDistributor Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAARDistributor-flow.en-US.svg)
 
 ---
 ### APRStaking Contract
 
-![APRStaking Diagram](https://www.plantuml.com/plantuml/svg/fLJHYjim47pNL-nZ3jmVAAHSclOWBxtYD1-mbTP5L9Q2jBf0lxwIfRYkGwf00mcEc5dDpWn-3eoUusXWzxK_ClxKziVUMVOeMQIlyt0AvElZwyMcPt5E52tr6IqlQ81XyK-8xHOELhD6etyXQsTXknNJ17ZtOSbx3_gAeysdtQxl8FyUNhzqS45ZYDE9oyGdiQ2jXyoN4SYw0GH6fabAnb4cP1LvfHj-o8Xqii7HHSlhkwga16IFDWpaNxmRDtbKjnZKmPMEXk5RXS8nIaaX3D48I9z_hD6JT5uLDL2rTC1wf7GqdfzQ_DDP8HEmOpJJqgegloLEqIOAZNeEaZw_aML19j0VzI-e3Qdx0tfw8y_569GvQq5MJRwVR6Ww7-tA-sBUCGw3bfeib_HQc-_Ho6YGosMUBkYBvjiW5obM80mfpMlTW5sfVMQlfFG5_X4DMbaqFPP8yS5FySwqLiTgc_uIz5y5Q9QW15Pgy1YZEB8tg4TIG3Dnwj31XiUzQtGgOtElvi7DVZJxkIfD4NYtgF8AdhVUPBFgYwdTorgrxnX8WREWeYzlHhIgb1QPn7FI5aSZVWC0)
+![APRStaking Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/APRStaking-flow.en-US.svg)
 
 ## Usage Examples
 
@@ -70,7 +70,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
    - DAAR rewards are allocated based on each holder's share in DAARION.
 #### Use Case Diagram:
 
-![DAAR Use Case Diagram](https://www.plantuml.com/plantuml/svg/RPB1QiCm38RlVWgHUw19McWlerd3RcCZMzdPIqGnIvqXo-jXzDqN5sV3oYv6lxuFWMNl7MjYVnwKxdWaUBfOf5WVtLGgmewrFGq8MLFNBRoE7sW3WuEUZiRe4-bp1jyAuCyD2S0xx8AKlQ3jCz0EZeSo9IrsQBummcg2rsJGSXB30yx-UWdVz30WDr7OB8N6E2RpxdcaA6sNKltS_YFkKl5NG0YhYLAnIgr7Otb6HOhkFTaPbRUhNvKAQuUy7oyslmlxaerAgTihGUu_ev7cIkIro1kHjoBlH2vMib78HgdsQFlmZNu0)
+![DAAR Use Case Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-use-case.en-US.svg)
 
 ---
 
