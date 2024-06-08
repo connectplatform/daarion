@@ -54,7 +54,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 ---
 ### APRStaking Contract
 
-![APRStaking Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/APRStaking-flow.en-US.svgg)
+![APRStaking Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/APRStaking-flow.en-US.svg)
 
 ## Usage Examples
 
