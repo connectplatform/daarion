@@ -15,8 +15,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 - **Upgradeable**: Supports role-based access and upgradeability.
 #### How it works:
 
-![DAAR Diagram](diagrams/DAAR-concept.svg)
-
+![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/diagrams/DAAR-concept.svg)
 
 ### DAARION
 - **ERC20 Compliant**: Standard ERC20 token functionalities.
