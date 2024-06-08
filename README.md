@@ -15,7 +15,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 - **Upgradeable**: Supports role-based access and upgradeability.
 #### How it works:
 
-![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/diagrams/DAAR-concept.svg)
+![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-concept.svg)
 
 ### DAARION
 - **ERC20 Compliant**: Standard ERC20 token functionalities.
@@ -38,7 +38,7 @@ The DAAR and DAARION smart contracts are designed to create an ecosystem for dig
 
 ### DAAR Contract
 
-![DAAR Diagram](https://www.plantuml.com/plantuml/svg/hLHDRnCn4BtlhvZZ1gKAN9626YYHSa18RL7FhdTMjUeTH_OiGVnwx5btwmO7miTAbTtupPldzqQ-3AmyZuE5gytc-eCZzafp4_-SXoy1VTv-Fb3SD_i8Djhi5R4KW0goDirw3JioR9GrtnKRHx1UDr855-ycx5imJmXi3yfQvAibk8HPmlJ_zQ99qA9a9aNGMHr4pOpIyjOh2ZrwE1X-W2rYwXfbbqqvOrgFKRb1uYMemOt4YqPPXXkaBXQO0FXDsx733dhl1kWH6uZVaw2vlE3CH0tQW0KHEVuDMRv-IHKX6s63Lathg-bGwUHdkjmAthoEt-9SNN3np5hMIB8HZeFXsSExQ65gWbynef6wbmxBDSwmUHjnRH0hbb2n_2XV_O3w4Q8Rxg188oZgu5xPj9TqDhKJ26FV6sqmN-kS6C-qJB1dn_cV8_tRMFyeMgb8yPPL4bYgwr1xL06V8v7XBd9mVex1K154HOIF3JsNLvxdwWOdUVbt6QhAYn6G2rG4jOI7kFmqH-E-Kun7xiuWeIrSAJ19YFWooxhBGTRbvDEaOzgUafBdeQuXixni_d6QiTMEP9LHEsKCJjXjX2HNbDPkf9DQJCZStL714jYFkAYBFAh9IYklki1sz6z2UcN3AINPaKvw58vzCiIhzwCdk7MFIA7cr10nBRlw2vJFWQMysboQdBhxVUpTredbx9V48ZmJNo9rus1_0000)
+![DAAR Diagram](DAAR-flow.svg)
 
 ---
 
