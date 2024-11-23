@@ -1,0 +1,57 @@
+@startuml DAARDistributorContract
+actor User
+actor Owner
+
+participant DAARDistributor as DAARDistributor
+
+== Initialization ==
+Owner -> DAARDistributor : initialize(DAAR, DAARION, epochLength, owner)
+DAARDistributor -> DAARDistributor : Initialize contract state
+
+== Set Epoch Length ==
+Owner -> DAARDistributor : setEpochLength(epochLength)
+DAARDistributor -> DAARDistributor : Update epoch length
+DAARDistributor -> Owner : emit EpochLengthSet event
+
+== Stake DAARION ==
+User -> DAARDistributor : stakeDAARION(amount)
+DAARDistributor -> DAARION : transferFrom(User, DAARDistributor, amount)
+alt Transfer Successful
+    DAARDistributor -> DAARDistributor : Update stake record
+    DAARDistributor -> DAARDistributor : Update totalStaked
+    DAARDistributor -> User : emit StakeEvent
+else Transfer Failed
+    DAARDistributor -> User : Revert transaction
+end
+
+== Unstake DAARION ==
+User -> DAARDistributor : unstakeDAARION(amount)
+alt Sufficient Stake
+    DAARDistributor -> DAARDistributor : Calculate pending rewards
+    DAARDistributor -> DAAR : transfer rewards to User
+    DAARDistributor -> DAARION : transfer amount to User
+    DAARDistributor -> DAARDistributor : Update stake record
+    DAARDistributor -> DAARDistributor : Update totalStaked
+    DAARDistributor -> User : emit UnstakeEvent
+else Insufficient Stake
+    DAARDistributor -> User : Revert transaction
+end
+
+== Claim Rewards ==
+User -> DAARDistributor : claimRewards()
+alt Pending Rewards Available
+    DAARDistributor -> DAAR : transfer rewards to User
+    DAARDistributor -> DAARDistributor : Update reward debt
+    DAARDistributor -> User : emit ClaimRewardsEvent
+else No Rewards Available
+    DAARDistributor -> User : Revert transaction
+end
+
+== Distribute DAAR ==
+Owner -> DAARDistributor : distributeDAAR()
+DAARDistributor -> DAARDistributor : Update epoch
+DAARDistributor -> DAARDistributor : Calculate rewards per share
+DAARDistributor -> DAARDistributor : Distribute rewards
+DAARDistributor -> Owner : emit DAARDistributed event
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+actor User
+participant DAAR
+
+User -> DAAR: send amount
+
+alt
+    DAAR -> walletD: fee
+    DAAR -> recipient: remaining amount
+
+alt Wallet is excluded from fee
+    DAAR -> recipient: transfer full amount to recipient
+
+end
+@enduml

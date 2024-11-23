@@ -1,0 +1,26 @@
+@startuml DAARION Class Diagram
+class DAARION {
+  +initialize(address _wallet1, address _owner) : void
+  +transfer(address recipient, uint256 amount) : bool
+  +transferFrom(address sender, address recipient, uint256 amount) : bool
+  +setSalesTax(uint256 tax) : void
+  +setWallet1(address _wallet1) : void
+  +excludeFromTax(address account) : void
+  +includeInTax(address account) : void
+  +mint(address to, uint256 amount) : void
+  +burn(uint256 amount) : void
+  +pause() : void
+  +unpause() : void
+
+  -wallet1 : address
+  -salesTax : uint256
+  -isExcludedFromTax : mapping(address => bool)
+  -BURN_ADDRESS : address = 0x000000000000000000000000000000000000dEaD
+
+  +SalesTaxSet(uint256 newTax)
+  +Wallet1Set(address newWallet)
+  +ExcludedFromTax(address account)
+  +IncludedInTax(address account)
+  +TransferWithTax(address indexed sender, address indexed recipient, uint256 amount, uint256 taxAmount)
+}
+@enduml

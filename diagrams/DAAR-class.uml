@@ -1,0 +1,31 @@
+@startuml
+class DAAR {
+  +initialize(address _walletD, address _owner, address _walletR) : void
+  +transfer(address recipient, uint256 amount) : bool
+  +transferFrom(address sender, address recipient, uint256 amount) : bool
+  +setTransactionFee(uint256 newFee) : void
+  +setWalletD(address newWallet) : void
+  +excludeFromFee(address account) : void
+  +includeInFee(address account) : void
+  +setDistributor(address _distributor) : void
+  +setAPRDistributor(address _distributor) : void
+  +distributeDAAR(address[] calldata recipients, uint256[] calldata amounts) : void
+  +mint(address to, uint256 amount) : void
+  +burn(uint256 amount) : void
+
+  -walletD : address
+  -transactionFee : uint256
+  -isExcludedFromFee : mapping(address => bool)
+
+  +TransactionFeeSet(uint256 newFee)
+  +WalletDSet(address newWallet)
+  +DistributorSet(address distributor)
+  +APRDistributorSet(address distributor)
+  +ExcludedFromFee(address account)
+  +IncludedInFee(address account)
+  +Mint(address indexed to, uint256 amount)
+  +Burn(address indexed from, uint256 amount)
+  +DAARDistributed(address indexed distributor, address[] recipients, uint256[] amounts)
+  +TransferWithFee(address indexed sender, address indexed recipient, uint256 amount, uint256 feeAmount)
+}
+@enduml

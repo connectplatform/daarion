@@ -1,0 +1,64 @@
+@startuml DAARIONContract
+actor User
+actor Owner
+
+participant DAARION as DAARION
+
+Owner -> DAARION : initialize(wallet1, owner)
+
+== Transfer With Tax ==
+User -> DAARION : transfer(recipient, amount)
+alt Excluded From Tax
+    DAARION -> User : Transfer amount
+else Not Excluded From Tax
+    DAARION -> DAARION : Calculate taxAmount (amount * salesTax / 10000)
+    DAARION -> DAARION : Calculate transferAmount (amount - taxAmount)
+    DAARION -> BURN_ADDRESS : Transfer taxAmount
+    DAARION -> User : Transfer transferAmount
+    DAARION -> User : emit TransferWithTax event
+end
+
+== Transfer From With Tax ==
+User -> DAARION : transferFrom(sender, recipient, amount)
+alt Excluded From Tax
+    DAARION -> User : Transfer amount
+else Not Excluded From Tax
+    DAARION -> DAARION : Calculate taxAmount (amount * salesTax / 10000)
+    DAARION -> DAARION : Calculate transferAmount (amount - taxAmount)
+    DAARION -> BURN_ADDRESS : Transfer taxAmount
+    DAARION -> User : Transfer transferAmount
+    DAARION -> User : emit TransferWithTax event
+end
+
+== Mint Tokens ==
+Owner -> DAARION : mint(to, amount)
+DAARION -> User : emit Mint event
+
+== Burn Tokens ==
+Owner -> DAARION : burn(amount)
+DAARION -> User : emit Burn event
+
+== Pause Contract ==
+Owner -> DAARION : pause()
+DAARION -> User : emit Paused event
+
+== Unpause Contract ==
+Owner -> DAARION : unpause()
+DAARION -> User : emit Unpaused event
+
+== Exclude from Tax ==
+Owner -> DAARION : excludeFromTax(account)
+DAARION -> User : emit ExcludedFromTax event
+
+== Include in Tax ==
+Owner -> DAARION : includeInTax(account)
+DAARION -> User : emit IncludedInTax event
+
+== Set Sales Tax ==
+Owner -> DAARION : setSalesTax(newTax)
+DAARION -> User : emit SalesTaxSet event
+
+== Set Wallet1 ==
+Owner -> DAARION : setWallet1(newWallet)
+DAARION -> User : emit Wallet1Set event
+@enduml

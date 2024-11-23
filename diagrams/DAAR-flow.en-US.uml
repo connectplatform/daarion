@@ -1,0 +1,65 @@
+@startuml DAARContract
+actor User
+actor Owner
+
+participant DAAR as DAAR
+
+== Initialization ==
+Owner -> DAAR : initialize(walletD, owner, walletR)
+DAAR -> DAAR : Initialize contract state
+
+== Transfer with Fee ==
+User -> DAAR : transfer(recipient, amount)
+alt Sender is excluded from fee
+    DAAR -> recipient : transfer amount
+else Sender is not excluded from fee
+    DAAR -> walletD : transfer feeAmount (amount * transactionFee / 10000)
+    DAAR -> recipient : transfer amount - feeAmount
+    DAAR -> User : emit TransferWithFee event
+end
+
+== Transfer from with Fee ==
+User -> DAAR : transferFrom(sender, recipient, amount)
+DAAR -> DAAR : check allowance and balance
+alt Allowance and balance sufficient
+    alt Sender is excluded from fee
+        DAAR -> recipient : transfer amount
+    else Sender is not excluded from fee
+        DAAR -> walletD : transfer feeAmount (amount * transactionFee / 10000)
+        DAAR -> recipient : transfer amount - feeAmount
+        DAAR -> User : emit TransferWithFee event
+    end
+    DAAR -> sender : decrease allowance
+else Allowance or balance insufficient
+    DAAR -> User : revert transaction
+end
+
+== Set Transaction Fee ==
+Owner -> DAAR : setTransactionFee(newFee)
+DAAR -> DAAR : update transactionFee
+DAAR -> Owner : emit TransactionFeeSet event
+
+== Set WalletD ==
+Owner -> DAAR : setWalletD(newWallet)
+DAAR -> DAAR : update walletD
+DAAR -> Owner : emit WalletDSet event
+
+== Exclude/Include from Fee ==
+Owner -> DAAR : excludeFromFee(account)
+DAAR -> DAAR : update isExcludedFromFee(account, true)
+DAAR -> Owner : emit ExcludedFromFee event
+
+Owner -> DAAR : includeInFee(account)
+DAAR -> DAAR : update isExcludedFromFee(account, false)
+DAAR -> Owner : emit IncludedInFee event
+
+== Mint/Burn Tokens ==
+Owner -> DAAR : mint(to, amount)
+DAAR -> DAAR : mint tokens
+DAAR -> Owner : emit Mint event
+
+Owner -> DAAR : burn(amount)
+DAAR -> DAAR : burn tokens
+DAAR -> Owner : emit Burn event
+
+@enduml

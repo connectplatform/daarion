@@ -1,0 +1,30 @@
+@startuml
+class DAARDistributor {
+  +initialize(address _DAAR, address _DAARION, uint256 _epochLength, address _owner) : void
+  +setEpochLength(uint256 _epochLength) : void
+  +stakeDAARION(uint256 _amount) : void
+  +unstakeDAARION(uint256 _amount) : void
+  +claimRewards() : void
+  +distributeDAAR() : void
+
+  -DAAR : ERC20Upgradeable
+  -DAARION : ERC20Upgradeable
+  -epochLength : uint256
+  -currentEpoch : uint256
+  -stakes : mapping(address => Stake)
+  -totalStaked : uint256
+  -accRewardPerShare : uint256
+
+  +DAARDistributed(uint256 epoch, uint256 totalStake, uint256 reward)
+  +EpochLengthSet(uint256 newEpochLength)
+  +StakeEvent(address indexed user, uint256 amount)
+  +UnstakeEvent(address indexed user, uint256 amount)
+  +ClaimRewardsEvent(address indexed user, uint256 reward)
+
+  class Stake {
+    +amount : uint256
+    +epoch : uint256
+    +rewardDebt : uint256
+  }
+}
+@enduml

@@ -1,0 +1,25 @@
+@startuml ARP Staking Class Diagram
+class APRStaking {
+  +initialize(address _DAAR, address _DAARION, address _walletR, address owner) : void
+  +stakeAPR(uint256 _amount) : void
+  +unstakeAPR(uint256 _amount) : void
+  +calculateAPRReward(address staker) : uint256
+  +getTotalStakedDAARION() : uint256
+
+  -DAAR : ERC20Upgradeable
+  -DAARION : ERC20Upgradeable
+  -apr : uint256
+  -walletR : address
+  -aprStakes : mapping(address => APRStake)
+  -totalStakedDAARION : uint256
+
+  +APRStakeEvent(address indexed user, uint256 amount)
+  +APRUnstakeEvent(address indexed user, uint256 amount)
+  +APRRewardClaimed(address indexed user, uint256 reward)
+
+  class APRStake {
+    +amount : uint256
+    +startTime : uint256
+  }
+}
+@enduml
