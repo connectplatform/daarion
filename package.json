@@ -1,0 +1,35 @@
+{
+  "name": "daarion-token",
+  "version": "2.0.0",
+  "description": "This README provides a comprehensive overview and guide to the DAAR and DAARION smart contracts, ensuring clarity and understanding for developers, stakeholders, and participants.",
+  "main": "hardhat.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "deploy:amoy": "npx hardhat run scripts/deploy.js --network amoy",
+    "deploy:polygon": "npx hardhat run scripts/deploy.js --network polygon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/connectplatform/daarion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/connectplatform/daarion/issues"
+  },
+  "homepage": "https://github.com/connectplatform/daarion#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "@openzeppelin/contracts-upgradeable": "^5.2.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.0",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "hardhat": "^2.22.19",
+    "hardhat-abi-exporter": "^2.10.1"
+  }
+}

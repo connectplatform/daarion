@@ -1,0 +1,9 @@
+truffle-config.js
+truffle-config.js.txt
+package-lock.json
+.vscode/settings.json
+build/*
+artifacts/*
+node_modules/
+dist/
+.env.local
