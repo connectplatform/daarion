@@ -1,108 +1,115 @@
-# DAAR and DAARION Smart Contracts
-This README provides a comprehensive overview and guide to the DAAR and DAARION smart contracts, ensuring clarity and understanding for developers, stakeholders, and participants.
+# Экосистема DAAR/DAARION
 
-## Overview
+## Обзор проекта
+Экосистема DAAR/DAARION представляет собой набор смарт-контрактов, предназначенных для управления токенами DAAR и DAARION, которые играют ключевую роль в платформе GreenFood. DAAR используется как платежный токен для покупки инвентаря GreenFood, а DAARION — как инвестиционный токен, доступный только в паре с DAAR. Экосистема включает в себя четыре основных смарт-контракта: DAAR, DAARION, APRStaking и DAARDistributor.
 
-The DAAR and DAARION smart contracts are designed to create an ecosystem for digital asset distribution and revenue sharing on the Polygon blockchain. These contracts provide mechanisms for automatic token distribution, staking, and rewards.
+### Цель
+- Управление платежами и инвестициями в рамках платформы GreenFood.
+- Обеспечение прозрачности и безопасности транзакций.
+- Поощрение участников через систему стейкинга и вознаграждений.
 
-## Features
+### Миссия
+- Создать надежную и эффективную систему для управления токенами в экосистеме GreenFood.
+- Обеспечить справедливое распределение вознаграждений и сборов.
 
-### DAAR
-- **ERC20 Compliant**: Standard ERC20 token functionalities.
-- **Burnable**: Allows the burning of tokens.
-- **Pausable**: Can pause and unpause contract functionalities.
-- **Transaction Fee**: A 0.5% fee on each transaction, sent to a designated wallet (`walletD`).
-- **Upgradeable**: Supports role-based access and upgradeability.
-#### How it works:
+### Видение
+- Стать ведущей платформой для децентрализованных платежей и инвестиций в сфере устойчивого питания.
+- Расширить возможности стейкинга и интеграции с другими DeFi-проектами.
 
-![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-concept.en-US.svg)
+### Цели
+- Реализовать систему сборов и вознаграждений, стимулирующую участие.
+- Обеспечить безопасность и прозрачность всех транзакций.
+- Упростить взаимодействие пользователей с платформой.
 
-### DAARION
-- **ERC20 Compliant**: Standard ERC20 token functionalities.
-- **Burnable**: Allows the burning of tokens.
-- **Pausable**: Can pause and unpause contract functionalities.
-- **Sales Tax**: A 5% tax on each transaction, which is burned.
-- **Upgradeable**: Supports role-based access and upgradeability.
+## Описание смарт-контрактов
+### 1. DAAR
+- **Назначение**: Основной платежный токен для покупок в GreenFood.
+- **Особенности**:
+  - Сбор комиссии 0.5% на каждый прямой перевод, которая направляется на адрес `walletD`.
+  - Баланс `walletD` периодически распределяется через контракт DAARDistributor в зависимости от стейков.
+- **Ключевые функции**:
+  - `transfer`: Перевод токенов с комиссией.
+  - `mint`: Чеканка новых токенов (только для роли MINTER_ROLE).
+  - `burn`: Сжигание токенов (доступно для всех пользователей).
 
-### DAARDistributor
-- **Staking**: Allows staking of DAARION tokens.
-- **Rewards Distribution**: Distributes DAAR tokens as rewards based on staking.
-- **Epoch Management**: Operates on epochs for reward distribution.
+### 2. DAARION
+- **Назначение**: Инвестиционный токен, торгуемый только в паре с DAAR.
+- **Особенности**:
+  - Сбор налога 5% на продажу, который сжигается.
+  - Исключение из налога для определенных адресов (`wallet1`, `walletD`, `walletR`).
+- **Ключевые функции**:
+  - `transfer`: Перевод токенов с налогом.
+  - `mint`: Чеканка новых токенов (только для роли MINTER_ROLE).
+  - `burn`: Сжигание токенов (доступно для всех пользователей).
 
-### APRStaking
-- **Staking**: Allows staking of DAARION tokens.
-- **APR Rewards**: Provides rewards based on a fixed Annual Percentage Rate (APR).
-- **Upgradeable**: Supports role-based access and upgradeability.
+### 3. APRStaking
+- **Назначение**: Контракт для стейкинга DAAR (20% APR) и DAARION (11% APR).
+- **Особенности**:
+  - Вознаграждения выплачиваются в DAAR.
+  - Поддерживает стейкинг как DAAR, так и DAARION.
+- **Ключевые функции**:
+  - `stakeDAAR`: Стейкинг DAAR.
+  - `unstakeDAAR`: Вывод стейкнутых DAAR.
+  - `claimRewards`: Вывод накопленных вознаграждений.
 
-## Smart Contract Details
+### 4. DAARDistributor
+- **Назначение**: Распределение сборов с DAAR в зависимости от стейков DAARION.
+- **Особенности**:
+  - Вознаграждения распределяются периодически (раз в эпоху).
+  - Поддерживает стейкинг DAARION.
+- **Ключевые функции**:
+  - `stakeDAARION`: Стейкинг DAARION.
+  - `unstakeDAARION`: Вывод стейкнутых DAARION.
+  - `claimRewards`: Вывод накопленных вознаграждений.
 
-### DAAR Contract
+## Архитектура
+- **Сбор комиссий**: Все комиссии с переводов DAAR направляются на `walletD`.
+- **Распределение**: Периодически баланс `walletD` передается на DAARDistributor, где распределяется среди стейкеров DAARION пропорционально их стейкам.
+- **Стейкинг**:
+  - DAAR можно стейкнуть в APRStaking для получения 20% APR.
+  - DAARION можно стейкнуть в DAARDistributor для получения доли от комиссий DAAR.
 
-![DAAR Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-flow.en-US.svg)
+## Развертывание и настройка
+1. **Подготовка**:
+   - Установите Truffle или Hardhat для развертывания контрактов.
+   - Настройте среду для взаимодействия с Ethereum (например, Ganache для тестирования).
 
----
+2. **Развертывание**:
+   - Используйте скрипты для развертывания каждого контракта.
+   - Укажите адреса `wallet1`, `walletD`, `walletR` при инициализации.
 
-### DAARION Contract
+3. **Инициализация**:
+   - Инициализируйте каждый контракт с необходимыми параметрами.
 
-![DAARION Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAARION-flow.en-US.svg)
+## Использование
+- **Для DAAR**:
+  - Переводите токены с помощью `transfer`.
+  - Сжигайте токены с помощью `burn`.
+- **Для DAARION**:
+  - Переводите токены с помощью `transfer`.
+  - Сжигайте токены с помощью `burn`.
+- **Стейкинг**:
+  - Стейкните DAAR в APRStaking.
+  - Стейкните DAARION в DAARDistributor.
+  - Выводите вознаграждения с помощью `claimRewards`.
 
----
-### DAARDistributor Contract
+## Безопасность
+- Используются модификаторы `onlyOwner` и роли (MINTER_ROLE, PAUSER_ROLE) для контроля доступа.
+- Защита от повторного входа с помощью `ReentrancyGuardUpgradeable`.
+- Все контракты поддерживают обновления через UUPS.
 
-![DAARDistributor Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAARDistributor-flow.en-US.svg)
+## Вкладчики и управление
+- **Вкладчики**: Команда разработчиков и сообщество.
+- **Управление**: Через мультисиг кошелек (`wallet1`).
 
----
-### APRStaking Contract
+## Будущее развитие
+- Добавление новых функций стейкинга.
+- Интеграция с другими DeFi-проектами.
+- Оптимизация газовых затрат.
 
-![APRStaking Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/APRStaking-flow.en-US.svg)
+## Лицензия
+- [MIT License](https://opensource.org/licenses/MIT)
 
-## Usage Examples
-
-### DAAR Token
-
-1. **Buying and Selling Products**
-   - Use DAAR tokens to buy and sell organic products within the GreenFood cooperative.
-2. **Transaction Fee**
-   - Every transaction deducts a 0.5% fee sent to walletD.
-   - For example, sending 100 DAAR results in 0.5 DAAR to walletD and 99.5 DAAR to the recipient.
-3. **Reward Distribution**
-   - Funds in walletD are distributed monthly among DAARION LP token holders.
-   - DAAR rewards are allocated based on each holder's share in DAARION.
-#### Use Case Diagram:
-
-![DAAR Use Case Diagram](https://raw.githubusercontent.com/connectplatform/daarion/main/diagrams/DAAR-use-case.en-US.svg)
-
----
-
-### DAARION Token
-
-1. **Transaction Fee**
-   - Each transaction applies a sales tax, where a portion of the tokens is burned.
-   - For instance, transferring 100 DAARION results in a 5% tax and burn (5 DAARION burned, 95 DAARION received by the recipient).
-
----
-
-### DAARDistributor Contract
-
-1. **Staking DAARION**
-   - Users stake their DAARION tokens to start earning DAAR rewards.
-2. **Unstaking DAARION**
-   - Users can unstake their DAARION tokens and receive their staked amount along with any accrued rewards.
-3. **Claiming Rewards**
-   - Users can claim their accumulated DAAR rewards based on their staked DAARION tokens.
-
----
-
-### APRStaking Contract
-
-1. **Stake Tokens**
-   - Users stake a certain amount of DAARION tokens to start earning rewards.
-2. **Claim Rewards**
-   - Users can claim their accumulated rewards anytime.
-3. **Unstake Tokens**
-   - Users can unstake their tokens and receive rewards in DAAR.
-
-
----
-
-For more details on the GreenFood cooperative and the DAAR and DAARION token ecosystem, visit [GreenFood.live](https://greenfood.live).
+## Поддержка и сообщество
+- **Сообщество**: Присоединяйтесь к [Discord](https://discord.gg/daarion) или [Telegram](https://t.me/yourchannel).
+- **Документация**: Подробная документация доступна на [GitHub](https://github.com/connectplatform/daarion).

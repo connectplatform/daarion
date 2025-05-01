@@ -1,64 +1,70 @@
-@startuml DAARIONContract
+@startuml APRStaking
+
 actor User
 actor Owner
+actor Staff
 
-participant DAARION as DAARION
+participant APRStaking as APRStaking
 
-Owner -> DAARION : initialize(wallet1, owner)
+Owner -> APRStaking : initialize(daar, daarion, wallet1)
+note right: Initializes contract with DAAR, DAARION, and owner (wallet1)
 
-== Transfer With Tax ==
-User -> DAARION : transfer(recipient, amount)
-alt Excluded From Tax
-    DAARION -> User : Transfer amount
-else Not Excluded From Tax
-    DAARION -> DAARION : Calculate taxAmount (amount * salesTax / 10000)
-    DAARION -> DAARION : Calculate transferAmount (amount - taxAmount)
-    DAARION -> BURN_ADDRESS : Transfer taxAmount
-    DAARION -> User : Transfer transferAmount
-    DAARION -> User : emit TransferWithTax event
+== Staff Top-Up ==
+Staff -> APRStaking : DAAR.transfer(walletR, amount)
+note right: Staff sends DAAR to walletR (this contract), tax-free
+APRStaking -> Staff : emit DAAR.Transfer(staff, walletR, amount)
+note right: DAAR contract emits Transfer event
+
+== Stake DAARION ==
+User -> APRStaking : stakeDAARION(amount)
+APRStaking -> APRStaking : _updatePools()
+note right: Detects new DAAR balance, caps DAARION rewards at 4% APR
+APRStaking -> User : DAARION.transferFrom(user, this, amount)
+APRStaking -> User : emit StakeDAARIONEvent(user, amount)
+
+== Unstake DAARION ==
+User -> APRStaking : unstakeDAARION(amount)
+APRStaking -> APRStaking : _updatePools()
+note right: Detects new DAAR balance, caps DAARION rewards at 4% APR
+APRStaking -> User : DAARION.transfer(user, amount)
+APRStaking -> User : emit UnstakeDAARIONEvent(user, amount)
+
+== Stake DAAR ==
+User -> APRStaking : stakeDAAR(amount)
+APRStaking -> APRStaking : _updatePools()
+note right: Detects new DAAR balance, caps DAAR rewards at 20% APR
+APRStaking -> User : DAAR.transferFrom(user, this, amount)
+APRStaking -> User : emit StakeDAAREvent(user, amount)
+
+== Unstake DAAR ==
+User -> APRStaking : unstakeDAAR(amount)
+APRStaking -> APRStaking : _updatePools()
+note right: Detects new DAAR balance, caps DAAR rewards at 20% APR
+APRStaking -> User : DAAR.transfer(user, amount)
+APRStaking -> User : emit UnstakeDAAREvent(user, amount)
+
+== Claim Rewards ==
+User -> APRStaking : claimReward()
+APRStaking -> APRStaking : _updatePools()
+note right: Calculates rewards for DAARION (4% APR) and DAAR (20% APR)
+APRStaking -> User : DAAR.transfer(user, totalReward)
+APRStaking -> User : emit RewardClaimed(user, totalReward)
+
+== Withdraw Excess Tokens ==
+Owner -> APRStaking : withdrawExcessTokens(token, amount)
+alt token == DAARION
+    APRStaking -> Owner : DAARION.transfer(owner, amount)
+else token == DAAR
+    APRStaking -> Owner : DAAR.transfer(owner, amount)
 end
-
-== Transfer From With Tax ==
-User -> DAARION : transferFrom(sender, recipient, amount)
-alt Excluded From Tax
-    DAARION -> User : Transfer amount
-else Not Excluded From Tax
-    DAARION -> DAARION : Calculate taxAmount (amount * salesTax / 10000)
-    DAARION -> DAARION : Calculate transferAmount (amount - taxAmount)
-    DAARION -> BURN_ADDRESS : Transfer taxAmount
-    DAARION -> User : Transfer transferAmount
-    DAARION -> User : emit TransferWithTax event
-end
-
-== Mint Tokens ==
-Owner -> DAARION : mint(to, amount)
-DAARION -> User : emit Mint event
-
-== Burn Tokens ==
-Owner -> DAARION : burn(amount)
-DAARION -> User : emit Burn event
+APRStaking -> Owner : emit ExcessTokensWithdrawn(owner, amount, token)
 
 == Pause Contract ==
-Owner -> DAARION : pause()
-DAARION -> User : emit Paused event
+Owner -> APRStaking : pause()
+APRStaking -> Owner : emit Paused event
 
 == Unpause Contract ==
-Owner -> DAARION : unpause()
-DAARION -> User : emit Unpaused event
+Owner -> APRStaking : unpause()
+APRStaking -> Owner : emit Unpaused event
 
-== Exclude from Tax ==
-Owner -> DAARION : excludeFromTax(account)
-DAARION -> User : emit ExcludedFromTax event
-
-== Include in Tax ==
-Owner -> DAARION : includeInTax(account)
-DAARION -> User : emit IncludedInTax event
-
-== Set Sales Tax ==
-Owner -> DAARION : setSalesTax(newTax)
-DAARION -> User : emit SalesTaxSet event
-
-== Set Wallet1 ==
-Owner -> DAARION : setWallet1(newWallet)
-DAARION -> User : emit Wallet1Set event
 @enduml

@@ -34,12 +34,14 @@ contract DAAR is
     address public wallet1; // Multisig wallet (Gnosis Safe) for governance and admin
     address public walletR; // Special wallet R
 
+    // **PinkSale Factory Address**
+    address public constant PINKSALE_FACTORY = 0x62a63F21c96170D6a9B2EE1685892bDC97a3A11d;
+
     // **Fee Configuration**
     uint256 public transactionFee; // Fee in basis points (e.g., 50 = 0.5%)
     uint256 public constant MAX_TRANSACTION_FEE = 500; // Max 5%
 
-    // **Distributor Roles**
-    address public distributor; // Primary distributor
+    // **APR Distributor Role**
     address public aprDistributor; // APR-specific distributor
 
     // **Fee Exemption Mapping**
@@ -51,9 +53,8 @@ contract DAAR is
     event TransferWithFee(address indexed sender, address indexed recipient, uint256 amount, uint256 feeAmount);
     event ExcludedFromFee(address indexed account);
     event IncludedInFee(address indexed account);
-    event DistributorSet(address indexed distributor);
     event APRDistributorSet(address indexed distributor);
-    event DAARDistributed(address indexed distributor, address[] recipients, uint256[] amounts);
+    event DAARDistributed(address indexed sender, address[] recipients, uint256[] amounts);
     event EmergencyPauseTriggered(address indexed pauser);
     event RoleGranted(bytes32 indexed role, address indexed account);
     event RoleRevoked(bytes32 indexed role, address indexed account);
@@ -69,16 +70,18 @@ contract DAAR is
      * @param _initialFee Transaction fee in basis points.
      * @param _wallet1 Multisig wallet (Gnosis Safe) for admin and governance.
      * @param _walletR Special wallet R address.
+     * @param _aprDistributor APR Distributor wallet address.
      */
     function initialize(
         address _walletD,
         uint256 _initialFee,
         address _wallet1,
-        address _walletR
+        address _walletR,
+        address _aprDistributor
     ) public initializer {
         __ERC20_init("DAAR", "DAAR");
         __ERC20Burnable_init();
-        __Ownable_init(_wallet1); // Moved before Pausable
+        __Ownable_init(_wallet1);
         __Pausable_init();
         __AccessControlEnumerable_init();
         __ReentrancyGuard_init();
@@ -89,12 +92,20 @@ contract DAAR is
         require(_walletD != address(0), "Invalid walletD address");
         require(_wallet1 != address(0), "Invalid wallet1 address");
         require(_walletR != address(0), "Invalid walletR address");
+        require(_aprDistributor != address(0), "Invalid APR distributor address");
         require(_initialFee <= MAX_TRANSACTION_FEE, "Fee exceeds maximum");
 
         walletD = _walletD;
         wallet1 = _wallet1;
         walletR = _walletR;
+        aprDistributor = _aprDistributor;
         transactionFee = _initialFee;
+
+        // Exclude wallets from fees
+        isExcludedFromFee[_wallet1] = true;
+        isExcludedFromFee[_walletR] = true;
+        isExcludedFromFee[_walletD] = true;
+        isExcludedFromFee[PINKSALE_FACTORY] = true; // Exclude PinkSale factory address from fees
 
         // Assign roles to the multisig wallet
         _grantRole(DEFAULT_ADMIN_ROLE, _wallet1);
@@ -156,15 +167,6 @@ contract DAAR is
     }
 
     /**
-     * @dev Sets the primary distributor (onlyOwner).
-     */
-    function setDistributor(address _distributor) external onlyOwner {
-        require(_distributor != address(0), "Invalid distributor address");
-        distributor = _distributor;
-        emit DistributorSet(_distributor);
-    }
-
-    /**
      * @dev Sets the APR distributor (onlyOwner).
      */
     function setAPRDistributor(address _distributor) external onlyOwner {
@@ -181,7 +183,7 @@ contract DAAR is
         for (uint256 i = 0; i < recipients.length; i++) {
             _transfer(_msgSender(), recipients[i], amounts[i]);
         }
-        emit DAARDistributed(distributor, recipients, amounts);
+        emit DAARDistributed(_msgSender(), recipients, amounts);
     }
 
     /**
@@ -213,9 +215,9 @@ contract DAAR is
         if (isExcludedFromFee[sender] || isExcludedFromFee[recipient]) {
             _transfer(sender, recipient, amount);
         } else {
-            uint256 feeAmount = (amount * transactionFee) / 10000;
+            uint256 feeAmount = (amount * transactionFee) / 10000; // Use configurable fee
             uint256 transferAmount = amount - feeAmount;
-            _transfer(sender, walletD, feeAmount);
+            _transfer(sender, walletD, feeAmount); // Fee goes to walletD
             _transfer(sender, recipient, transferAmount);
             emit TransferWithFee(sender, recipient, transferAmount, feeAmount);
         }
