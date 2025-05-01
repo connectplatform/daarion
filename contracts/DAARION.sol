@@ -6,17 +6,8 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
-
-interface ICrossChainBridge {
-    function bridgeTokens(address token, address recipient, uint256 amount, uint256 destinationChainId) external;
-    function receiveTokens(address token, address recipient, uint256 amount) external;
-}
 
 contract DAARION is 
     Initializable, 
@@ -24,56 +15,51 @@ contract DAARION is
     ERC20BurnableUpgradeable, 
     OwnableUpgradeable, 
     PausableUpgradeable, 
-    ReentrancyGuardUpgradeable, 
-    AccessControlUpgradeable, 
     UUPSUpgradeable, 
-    ERC20PermitUpgradeable,
-    ERC20VotesUpgradeable
+    ERC20PermitUpgradeable
 {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
-
-    uint256 public salesTax;
-    mapping(address => bool) private _isExcludedFromTax;
+    // **Special Wallet Addresses**
     address public wallet1; // Multisig wallet (Gnosis Safe)
-    address public walletD; // Fee recipient for DAAR
-    address public walletR; // APR staking contract
-    address public bridgeContract; // Cross-chain bridge contract
+    address public walletD; // DAARDistributor (fee recipient for DAAR)
+    address public walletR; // APRStaking contract
 
-    event SalesTaxSet(uint256 newTax);
-    event ExcludedFromTax(address indexed account);
-    event IncludedInTax(address indexed account);
+    // **Tax Configuration**
+    uint256 public constant SALES_TAX = 500; // 5% burn tax (in basis points)
+
+    // **Events for Transparency**
     event TransferWithTax(address indexed sender, address indexed recipient, uint256 amount, uint256 taxAmount);
-    event BridgeContractSet(address indexed bridgeContract);
-    event CrossChainTransfer(address indexed sender, address indexed recipient, uint256 amount, uint256 destinationChainId);
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
+     * @dev Initializes the contract with initial parameters.
+     * @param _wallet1 Multisig wallet (Gnosis Safe) for admin and governance.
+     * @param _walletD DAARDistributor contract address.
+     * @param _walletR APRStaking contract address.
+     */
     function initialize(address _wallet1, address _walletD, address _walletR) public initializer {
         __ERC20_init("DAARION", "DAARION");
         __ERC20Burnable_init();
         __Ownable_init(_wallet1);
         __Pausable_init();
-        __ReentrancyGuard_init();
-        __AccessControl_init();
         __UUPSUpgradeable_init();
         __ERC20Permit_init("DAARION");
-        __ERC20Votes_init();
 
-        _transferOwnership(_wallet1);
+        require(_wallet1 != address(0), "Invalid wallet1 address");
+        require(_walletD != address(0), "Invalid walletD address");
+        require(_walletR != address(0), "Invalid walletR address");
 
-        salesTax = 500; // 5% (in basis points: 500 = 5%)
         wallet1 = _wallet1;
         walletD = _walletD;
         walletR = _walletR;
-        _isExcludedFromTax[msg.sender] = true;
-        _isExcludedFromTax[_wallet1] = true;
-        _isExcludedFromTax[_walletD] = true;
-        _isExcludedFromTax[_walletR] = true;
-
-        _grantRole(DEFAULT_ADMIN_ROLE, _wallet1);
-        _grantRole(MINTER_ROLE, _wallet1);
-        _grantRole(BRIDGE_ROLE, _wallet1); // For setting bridge contract
     }
 
+    /**
+     * @dev Updates special wallet addresses (onlyOwner).
+     */
     function setWallets(address _wallet1, address _walletD, address _walletR) external onlyOwner {
         require(_wallet1 != address(0), "Invalid wallet1 address");
         require(_walletD != address(0), "Invalid walletD address");
@@ -83,12 +69,18 @@ contract DAARION is
         walletR = _walletR;
     }
 
-    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+    /**
+     * @dev Overrides ERC20 transfer with tax logic.
+     */
+    function transfer(address recipient, uint256 amount) public virtual override whenNotPaused returns (bool) {
         _transferWithTax(_msgSender(), recipient, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    /**
+     * @dev Overrides ERC20 transferFrom with tax logic.
+     */
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override whenNotPaused returns (bool) {
         uint256 currentAllowance = allowance(sender, _msgSender());
         require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
         _transferWithTax(sender, recipient, amount);
@@ -96,13 +88,17 @@ contract DAARION is
         return true;
     }
 
+    /**
+     * @dev Internal function to handle transfers with burn tax.
+     */
     function _transferWithTax(address sender, address recipient, uint256 amount) internal {
-        require(amount <= balanceOf(sender), "ERC20: transfer amount exceeds balance");
-        if (sender == wallet1 || sender == walletD || sender == walletR ||
-            recipient == wallet1 || recipient == walletD || recipient == walletR) {
+        require(amount <= balanceOf(sender), "ERC20: insufficient balance");
+        if (sender == wallet1 || recipient == wallet1 ||
+            sender == walletD || recipient == walletD ||
+            sender == walletR || recipient == walletR) {
             _transfer(sender, recipient, amount);
         } else {
-            uint256 taxAmount = (amount * salesTax) / 10000;
+            uint256 taxAmount = (amount * SALES_TAX) / 10000; // 5% burn
             uint256 transferAmount = amount - taxAmount;
             _burn(sender, taxAmount);
             _transfer(sender, recipient, transferAmount);
@@ -110,84 +106,42 @@ contract DAARION is
         }
     }
 
-    function setSalesTax(uint256 tax) external onlyOwner {
-        require(tax <= 500, "Tax cannot exceed 5%");
-        salesTax = tax;
-        emit SalesTaxSet(tax);
-    }
-
-    function excludeFromTax(address account) external onlyOwner {
-        _isExcludedFromTax[account] = true;
-        emit ExcludedFromTax(account);
-    }
-
-    function includeInTax(address account) external onlyOwner {
-        _isExcludedFromTax[account] = false;
-        emit IncludedInTax(account);
-    }
-
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    /**
+     * @dev Mints new tokens (onlyOwner).
+     */
+    function mint(address to, uint256 amount) public onlyOwner {
+        require(to != address(0), "Cannot mint to zero address");
         _mint(to, amount);
     }
 
+    /**
+     * @dev Burns tokens from the caller's balance (open to all users).
+     */
     function burn(uint256 amount) public override {
         _burn(_msgSender(), amount);
     }
 
+    /**
+     * @dev Pauses the contract (onlyOwner).
+     */
     function pause() public onlyOwner {
         _pause();
     }
 
+    /**
+     * @dev Unpauses the contract (onlyOwner).
+     */
     function unpause() public onlyOwner {
         _unpause();
     }
 
-    function setBridgeContract(address _bridgeContract) external onlyOwner {
-        require(_bridgeContract != address(0), "Invalid bridge contract");
-        bridgeContract = _bridgeContract;
-        _grantRole(BRIDGE_ROLE, _bridgeContract);
-        emit BridgeContractSet(_bridgeContract);
-    }
-
-    function crossChainTransfer(address recipient, uint256 amount, uint256 destinationChainId) external nonReentrant {
-        require(bridgeContract != address(0), "Bridge contract not set");
-        require(amount <= balanceOf(_msgSender()), "Insufficient balance");
-        _burn(_msgSender(), amount);
-        ICrossChainBridge(bridgeContract).bridgeTokens(address(this), recipient, amount, destinationChainId);
-        emit CrossChainTransfer(_msgSender(), recipient, amount, destinationChainId);
-    }
-
-    function receiveCrossChain(address recipient, uint256 amount) external onlyRole(BRIDGE_ROLE) {
-        _mint(recipient, amount);
-    }
-
+    /**
+     * @dev Authorizes contract upgrades (onlyOwner).
+     */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    function _update(address from, address to, uint256 amount)
-        internal
-        override(ERC20Upgradeable, ERC20VotesUpgradeable)
-    {
-        super._update(from, to, amount);
-    }
-
-    function _getVotingUnits(address account)
-        internal
-        view
-        override
-        returns (uint256)
-    {
-        return balanceOf(account);
-    }
-
-    // Correctly override nonces from NoncesUpgradeable
-    function nonces(address owner)
-        public
-        view
-        override(ERC20PermitUpgradeable, NoncesUpgradeable)
-        returns (uint256)
-    {
-        return super.nonces(owner);
-    }
-
-    uint256[49] private __gap;
+    /**
+     * @dev Reserved storage gap for future upgrades.
+     */
+    uint256[50] private __gap;
 }
