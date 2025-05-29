@@ -13,39 +13,26 @@ contract DAARDistributor is
     OwnableUpgradeable, 
     UUPSUpgradeable 
 {
-    // Token interfaces
-    ERC20Upgradeable public DAAR;      // DAAR token (reward token)
-    ERC20Upgradeable public DAARION;   // DAARION token (staking token)
+    ERC20Upgradeable public DAAR;
+    ERC20Upgradeable public DAARION;
 
-    // Staking and reward variables
-    uint256 public totalStakedDAARION; // Total DAARION tokens staked
-    uint256 public epochDuration;      // Duration of each epoch in seconds
-    uint256 public lastEpochTimestamp; // Timestamp of the last epoch distribution
+    uint256 public totalStakedDAARION;
+    uint256 public epochDuration;
+    uint256 public lastEpochTimestamp;
 
-    // Staking data structure for DAARION
     struct Stake {
-        uint256 amount;       // Amount of DAARION staked
-        uint256 lastClaimedEpoch; // Epoch when rewards were last claimed
+        uint256 amount;
+        uint256 lastClaimedEpoch;
     }
 
-    // Mapping of user address to their stake
     mapping(address => Stake) public stakes;
 
-    // Epoch reward tracking
-    mapping(uint256 => uint256) public epochRewards; // DAAR rewards per epoch
+    mapping(uint256 => uint256) public epochRewards;
 
-    // Events
     event StakeEvent(address indexed user, uint256 amount);
     event UnstakeEvent(address indexed user, uint256 amount);
     event RewardsDistributed(uint256 indexed epoch, address[] recipients, uint256[] amounts);
 
-    /**
-     * @dev Initializes the contract with DAAR, DAARION, wallet1, and epoch duration.
-     * @param _DAAR Address of the DAAR token contract.
-     * @param _DAARION Address of the DAARION token contract.
-     * @param _wallet1 Address authorized to own the contract.
-     * @param _epochDuration Duration of each epoch in seconds.
-     */
     function initialize(
         address _DAAR, 
         address _DAARION, 
@@ -68,14 +55,8 @@ contract DAARDistributor is
         totalStakedDAARION = 0;
     }
 
-    /**
-     * @dev UUPS upgrade authorization; only the owner can upgrade.
-     */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    /**
-     * @dev Stake DAARION tokens.
-     */
     function stakeDAARION(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be > 0");
         Stake storage userStake = stakes[msg.sender];
@@ -85,9 +66,6 @@ contract DAARDistributor is
         emit StakeEvent(msg.sender, amount);
     }
 
-    /**
-     * @dev Unstake DAARION tokens.
-     */
     function unstakeDAARION(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be > 0");
         Stake storage userStake = stakes[msg.sender];
@@ -98,11 +76,6 @@ contract DAARDistributor is
         emit UnstakeEvent(msg.sender, amount);
     }
 
-    /**
-     * @dev Distribute DAAR rewards for the current epoch to stakers (called by owner).
-     * @param recipients List of staker addresses.
-     * @param amounts List of DAAR reward amounts for each staker.
-     */
     function distributeRewards(address[] calldata recipients, uint256[] calldata amounts) external onlyOwner {
         require(recipients.length == amounts.length, "Array length mismatch");
         require(block.timestamp >= lastEpochTimestamp + epochDuration, "Epoch not ended");
@@ -126,20 +99,11 @@ contract DAARDistributor is
         emit RewardsDistributed(currentEpoch, recipients, amounts);
     }
 
-    /**
-     * @dev Get the current epoch number.
-     * @return Current epoch number.
-     */
     function getCurrentEpoch() public view returns (uint256) {
         return (block.timestamp - lastEpochTimestamp) / epochDuration + 1;
     }
 
-    /**
-     * @dev Get pending rewards for a user (for off-chain calculation).
-     * @param user Address of the user.
-     * @return Pending DAAR rewards since last claimed epoch.
-     */
-    function getPendingRewards(address user) external view returns (uint256) {
+    function getPendingRewardsDAARDistributor(address user) external view returns (uint256) {
         Stake storage userStake = stakes[user];
         if (userStake.amount == 0) return 0;
 
@@ -155,6 +119,5 @@ contract DAARDistributor is
         return totalReward;
     }
 
-    // Reserved storage space for future upgrades.
     uint256[50] private __gap;
 }

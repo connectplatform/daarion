@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-// Import OpenZeppelin upgradeable libraries
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
@@ -29,11 +28,12 @@ contract APRStaking is
     uint256 public totalStakedDAAR;          // Total DAAR tokens staked
 
     uint256 public lastRewardBalance;        // Last recorded balance of DAAR for reward calculation
-    uint256 public lastUpdateTimestamp;      // Last timestamp when rewards were updated
+    uint256 public lastUpdateTimestamp;      // Timestamp of the last reward update
+    uint256 public stakedDAARBalance;        // Tracks staked DAAR balance for reward calculation
 
-    // APR configuration (in basis points, 100 = 1%)
-    uint256 public constant DAARION_APR = 400; // 4% APR for DAARION staking
-    uint256 public constant DAAR_APR = 2000;  // 20% APR for DAAR staking
+    // Constants for APR logic
+    uint256 public constant DAARION_APR = 400;   // 4% APR for DAARION (400 basis points)
+    uint256 public constant DAAR_APR = 2000;     // 20% APR for DAAR (2000 basis points)
     uint256 public constant SECONDS_PER_YEAR = 365 * 24 * 60 * 60; // Seconds in a year
 
     // Staking data structures
@@ -72,8 +72,8 @@ contract APRStaking is
         address _daarion,
         address _wallet1
     ) public initializer {
-        __Ownable_init(_wallet1); // Set Gnosis Safe as owner
-        __Pausable_init();        // Initialize pausable
+        __Ownable_init(_wallet1);
+        __Pausable_init();
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
@@ -83,16 +83,16 @@ contract APRStaking is
         DAARION = ERC20Upgradeable(_daarion);
 
         accRewardPerShareDAARION = 0;
-        accRewardPerShareDAAR = 0;
         totalStakedDAARION = 0;
+        accRewardPerShareDAAR = 0;
         totalStakedDAAR = 0;
         lastRewardBalance = 0;
         lastUpdateTimestamp = block.timestamp;
+        stakedDAARBalance = 0;
     }
 
     /**
-     * @dev UUPS upgrade authorization function.
-     * Only the owner can authorize an upgrade.
+     * @dev UUPS upgrade authorization function. Only the owner can authorize an upgrade.
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -111,7 +111,7 @@ contract APRStaking is
     }
 
     /**
-     * @dev Stake DAARION tokens to earn DAAR rewards at 4% APR.
+     * @dev Stake DAARION tokens to earn DAAR rewards.
      * @param amount Amount of DAARION to stake
      */
     function stakeDAARION(uint256 amount) external nonReentrant whenNotPaused {
@@ -160,7 +160,7 @@ contract APRStaking is
     }
 
     /**
-     * @dev Stake DAAR tokens to earn DAAR rewards at 20% APR.
+     * @dev Stake DAAR tokens to earn DAAR rewards.
      * @param amount Amount of DAAR to stake
      */
     function stakeDAAR(uint256 amount) external nonReentrant whenNotPaused {
@@ -178,6 +178,7 @@ contract APRStaking is
         require(DAAR.transferFrom(msg.sender, address(this), amount), "DAAR transfer failed");
         userStake.amount += amount;
         totalStakedDAAR += amount;
+        stakedDAARBalance += amount;
         userStake.rewardDebt = userStake.amount * accRewardPerShareDAAR / 1e12;
 
         emit StakeDAAREvent(msg.sender, amount);
@@ -201,6 +202,7 @@ contract APRStaking is
 
         userStake.amount -= amount;
         totalStakedDAAR -= amount;
+        stakedDAARBalance -= amount;
         userStake.rewardDebt = userStake.amount * accRewardPerShareDAAR / 1e12;
 
         require(DAAR.transfer(msg.sender, amount), "DAAR transfer failed");
@@ -244,12 +246,11 @@ contract APRStaking is
     }
 
     /**
-     * @dev Internal function to update both reward pools based on DAAR transfers to this contract (walletR).
-     * GreenFood staff manually send DAAR to this contract's address (walletR), which is detected as new rewards.
+     * @dev Internal function to update reward pools based on APR logic.
      */
     function _updatePools() internal {
         uint256 currentBalance = DAAR.balanceOf(address(this));
-        uint256 reward = currentBalance > lastRewardBalance ? currentBalance - lastRewardBalance : 0;
+        uint256 reward = currentBalance > stakedDAARBalance ? currentBalance - stakedDAARBalance : 0;
 
         if (reward == 0) {
             lastUpdateTimestamp = block.timestamp;
@@ -258,42 +259,36 @@ contract APRStaking is
 
         uint256 timeElapsed = block.timestamp - lastUpdateTimestamp;
 
-        // Calculate maximum rewards based on APR
         uint256 maxDAARIONReward = (totalStakedDAARION * DAARION_APR * timeElapsed) / (10000 * SECONDS_PER_YEAR);
         uint256 maxDAARReward = (totalStakedDAAR * DAAR_APR * timeElapsed) / (10000 * SECONDS_PER_YEAR);
 
-        // Distribute rewards proportionally, respecting APR caps
         uint256 totalStaked = totalStakedDAARION + totalStakedDAAR;
         if (totalStaked == 0) {
-            lastRewardBalance = currentBalance;
+            lastRewardBalance += reward;
             lastUpdateTimestamp = block.timestamp;
             return;
         }
 
-        // Calculate reward shares
         uint256 rewardDAARION = reward * totalStakedDAARION / totalStaked;
         uint256 rewardDAAR = reward * totalStakedDAAR / totalStaked;
 
-        // Cap DAARION rewards to achieve 4% APR
         if (rewardDAARION > maxDAARIONReward) {
             rewardDAARION = maxDAARIONReward;
-            rewardDAAR = reward - rewardDAARION; // Allocate excess to DAAR pool
+            rewardDAAR = reward - rewardDAARION;
         } else if (rewardDAAR > maxDAARReward) {
             rewardDAAR = maxDAARReward;
-            rewardDAARION = reward - rewardDAAR; // Allocate excess to DAARION pool
+            rewardDAARION = reward - rewardDAAR;
         }
 
-        // Update DAARION pool
         if (totalStakedDAARION > 0 && rewardDAARION > 0) {
             accRewardPerShareDAARION += (rewardDAARION * 1e12) / totalStakedDAARION;
         }
 
-        // Update DAAR pool
         if (totalStakedDAAR > 0 && rewardDAAR > 0) {
             accRewardPerShareDAAR += (rewardDAAR * 1e12) / totalStakedDAAR;
         }
 
-        lastRewardBalance = currentBalance;
+        lastRewardBalance += reward;
         lastUpdateTimestamp = block.timestamp;
     }
 
@@ -310,7 +305,7 @@ contract APRStaking is
         if (token == address(DAARION)) {
             require(availableBalance >= totalStakedDAARION + amount, "Insufficient excess DAARION");
         } else if (token == address(DAAR)) {
-            require(availableBalance >= totalStakedDAAR + amount, "Insufficient excess DAAR");
+            require(availableBalance >= stakedDAARBalance + amount, "Insufficient excess DAAR");
         }
         require(ERC20Upgradeable(token).transfer(msg.sender, amount), "Transfer failed");
 
@@ -334,7 +329,7 @@ contract APRStaking is
         uint256 tempAccRewardPerShareDAAR = accRewardPerShareDAAR;
 
         uint256 currentBalance = DAAR.balanceOf(address(this));
-        uint256 reward = currentBalance > lastRewardBalance ? currentBalance - lastRewardBalance : 0;
+        uint256 reward = currentBalance > stakedDAARBalance ? currentBalance - stakedDAARBalance : 0;
 
         if (reward > 0) {
             uint256 timeElapsed = block.timestamp - lastUpdateTimestamp;
@@ -371,7 +366,4 @@ contract APRStaking is
 
         return totalRewardDAARION + totalRewardDAAR;
     }
-
-    // Reserved storage gap for upgradeability
-    uint256[50] private __gap;
 }

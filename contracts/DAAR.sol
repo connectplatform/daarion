@@ -37,10 +37,13 @@ contract DAAR is
 
     // **Events for Transparency**
     event WalletDSet(address indexed newWallet);
+    event Wallet1Set(address indexed newWallet);
+    event WalletRSet(address indexed newWallet);
     event TransactionFeeSet(uint256 newFee);
     event TransferWithFee(address indexed sender, address indexed recipient, uint256 amount, uint256 feeAmount);
     event ExcludedFromFee(address indexed account);
     event IncludedInFee(address indexed account);
+    event Upgraded(address newImplementation);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -67,7 +70,6 @@ contract DAAR is
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
         __ERC20Permit_init("DAAR");
-
         // Input validation
         require(_walletD != address(0), "Invalid walletD address");
         require(_wallet1 != address(0), "Invalid wallet1 address");
@@ -89,7 +91,9 @@ contract DAAR is
     /**
      * @dev Authorizes contract upgrades (restricted to owner).
      */
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {
+        emit Upgraded(newImplementation); // Added: Event for upgrade
+    }
 
     /**
      * @dev Updates special wallet addresses (onlyOwner).
@@ -110,7 +114,10 @@ contract DAAR is
         walletD = _walletD;
         wallet1 = _wallet1;
         walletR = _walletR;
+
         emit WalletDSet(_walletD);
+        emit Wallet1Set(_wallet1); // Added: Event for wallet1
+        emit WalletRSet(_walletR); // Added: Event for walletR
     }
 
     /**
@@ -162,7 +169,7 @@ contract DAAR is
      * @dev Internal function to handle transfers with fees.
      */
     function _transferWithFee(address sender, address recipient, uint256 amount) internal nonReentrant {
-        require(amount <= balanceOf(sender), "ERC20: insufficient balance");
+        // Removed redundant check: balance check is handled in _transfer
 
         if (isExcludedFromFee[sender] || isExcludedFromFee[recipient]) {
             _transfer(sender, recipient, amount);
