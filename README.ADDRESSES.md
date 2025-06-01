@@ -4,6 +4,7 @@
 ✅ -- DAARDistributor: 0x605F5F73536ab6099ADc4381A3713Eab73384BE5
 ✅ -- APRStaking: 0xe9a321c213d837379ebD7027CE685B62dFDb8c3b
 ✅ -- DAARsales: 0x3F9b12c4Af72c030F0A0089E50b52ea59c56DDE4
+✅ -- DAARIONsales: 0x1f25Fd60F5Ba29dC6f014148A156A6386918Df3f
 
 ## Deployment Details
 
@@ -11,6 +12,13 @@
 - **Contract Address**: `0x3F9b12c4Af72c030F0A0089E50b52ea59c56DDE4`
 - **Network**: Polygon Mainnet
 - **DAAR Price**: $10.00 USD
+- **Payment Receiver**: `0x39c8e3807B864A633bd83C34995d7A3a18d0b7e8` (Gnosis Safe)
+- **Deployment Account**: `0x9C6CC8ae6B040ceA1C6b0127c5Bb61e49F3C3C47`
+
+### DAARIONsales Contract (Latest Deployment)
+- **Contract Address**: `0x1f25Fd60F5Ba29dC6f014148A156A6386918Df3f`
+- **Network**: Polygon Mainnet
+- **Exchange Rate**: 1 DAARION = 100 DAAR = $1000 USD
 - **Payment Receiver**: `0x39c8e3807B864A633bd83C34995d7A3a18d0b7e8` (Gnosis Safe)
 - **Deployment Account**: `0x9C6CC8ae6B040ceA1C6b0127c5Bb61e49F3C3C47`
 

@@ -1,0 +1,464 @@
+# 📖 DAARION Smart Contract System - Version History
+
+This document provides a comprehensive overview of the evolution of the DAARION ecosystem's core smart contracts, based on actual git commit analysis and code changes.
+
+## 🏗️ Contract Architecture Overview
+
+The DAARION ecosystem consists of four main upgradeable smart contracts:
+
+1. **DAAR.sol** - ERC20 honey-backed stable token ($10 USD)
+2. **DAARION.sol** - ERC20 premium utility token (scarce, cooperative access)
+3. **APRStaking.sol** - Dual-token staking system with APR-based rewards
+4. **DAARDistributor.sol** - DAARION staking rewards distribution system
+
+---
+
+## 💰 DAAR Token (DAAR.sol)
+
+### Version 2.9 (Initial Implementation)
+**Commit:** `73222fdd4d8fd140f549095c55dc9456c32df1d3` - v3.0a official release
+**Date:** March 29, 2025
+
+#### Core Features:
+- **Base Architecture:** ERC20Upgradeable + UUPS proxy pattern
+- **Libraries Introduced:**
+  - `@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol`
+
+#### Key Functionality:
+- Fixed supply of 8,000,000 DAAR tokens
+- Backed by honey at $10 USD per token
+- Upgrade authorization restricted to owner
+- Standard ERC20 functionality with upgradeability
+
+#### Technical Details:
+```solidity
+uint256 public constant TOTAL_SUPPLY = 8_000_000 * 10**18;
+```
+
+---
+
+## 🔷 DAARION Token (DAARION.sol)
+
+### Version 2.9 (Initial Implementation)
+**Commit:** `73222fdd4d8fd140f549095c55dc9456c32df1d3` - v3.0a official release
+**Date:** March 29, 2025
+
+#### Core Features:
+- **Base Architecture:** ERC20Upgradeable + UUPS proxy pattern
+- **Libraries Used:** Same as DAAR token
+
+#### Key Functionality:
+- Fixed supply of 8,000 DAARION tokens (highly scarce)
+- Premium utility token for cooperative access
+- Upgrade authorization restricted to owner
+- Standard ERC20 functionality with upgradeability
+
+#### Technical Details:
+```solidity
+uint256 public constant TOTAL_SUPPLY = 8_000 * 10**18;
+```
+
+---
+
+## 📈 APR Staking Contract (APRStaking.sol)
+
+### Version 2.9 → 3.0a (Initial Implementation)
+**Commit:** `73222fdd4d8fd140f549095c55dc9456c32df1d3` - v3.0a official release
+**Date:** March 29, 2025
+
+#### Core Features:
+- **Base Architecture:** UUPS upgradeable contract
+- **Libraries Introduced:**
+  - `@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol`
+  - `@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol`
+
+#### Key Functionality:
+- DAARION staking to earn DAAR rewards
+- Pool-based reward distribution mechanism
+- Manual reward detection from contract balance changes
+- Reentrancy protection
+- Owner-controlled upgrade authorization
+
+#### Technical Implementation:
+```solidity
+struct Stake {
+    uint256 amount;       // Amount of DAARION staked
+    uint256 rewardDebt;   // Reward debt (to prevent double claiming)
+    uint256 rewardCredit; // Accumulated rewards ready to claim
+}
+```
+
+### Version 4.0 Alpha (Major Enhancement)
+**Commit:** `bbe6facf68010d79b3fbe09aa23427ad526c3b2d` - v4.0 alpha release
+**Date:** May 1, 2025
+
+#### Major Changes:
+- **New Library Added:** `@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol`
+- **Architecture Change:** Single-token → Dual-token staking system
+
+#### Enhanced Features:
+1. **Dual Staking Pools:**
+   - DAARION staking (4% APR)
+   - DAAR staking (20% APR)
+
+2. **Pausable Functionality:**
+   - Emergency pause/unpause by owner
+   - Prevents staking/unstaking during emergencies
+
+3. **Separate Pool Management:**
+   - Independent reward calculation for each token
+   - Proportional reward distribution based on total staked amounts
+
+#### Technical Implementation:
+```solidity
+struct StakeDAARION {
+    uint256 amount;       // Amount of DAARION staked
+    uint256 rewardDebt;   // Reward debt
+    uint256 rewardCredit; // Accumulated rewards
+}
+
+struct StakeDAAR {
+    uint256 amount;       // Amount of DAAR staked
+    uint256 rewardDebt;   // Reward debt
+    uint256 rewardCredit; // Accumulated rewards
+}
+
+uint256 public constant DAARION_APR = 400;  // 4% APR
+uint256 public constant DAAR_APR = 2000;    // 20% APR
+```
+
+### Version 4.0 RC1 (APR Logic Enhancement)
+**Commit:** `de326abb30d39fe14ed8e570873af60a8e9af43a` - v4.0rc1
+**Date:** May 1, 2025
+
+#### Major Changes:
+- **APR-Based Reward Capping:** Implemented mathematical APR limits
+- **Time-Based Calculations:** Added timestamp tracking for accurate APR computation
+
+#### Enhanced Features:
+1. **APR Compliance:**
+   - Maximum rewards capped at specified APR rates
+   - Time-elapsed calculations for precise reward distribution
+   - Excess reward reallocation between pools
+
+2. **Mathematical Precision:**
+   - Seconds per year constant: `365 * 24 * 60 * 60`
+   - Basis points calculation (100 = 1%)
+   - Reward overflow protection
+
+#### Technical Implementation:
+```solidity
+uint256 public lastUpdateTimestamp;      // Timestamp of the last reward update
+uint256 public constant SECONDS_PER_YEAR = 365 * 24 * 60 * 60;
+
+// Calculate maximum rewards based on APR
+uint256 maxDAARIONReward = (totalStakedDAARION * DAARION_APR * timeElapsed) / (10000 * SECONDS_PER_YEAR);
+uint256 maxDAARReward = (totalStakedDAAR * DAAR_APR * timeElapsed) / (10000 * SECONDS_PER_YEAR);
+```
+
+### Version 4.0 Final (Staked Balance Tracking)
+**Commit:** `da2931affbeec147207df1f4d999cd870cc40d54` - DAARsales added
+**Date:** May 29, 2025
+
+#### Major Changes:
+- **Staked Balance Tracking:** Separated staked DAAR from reward DAAR
+- **Improved Reward Calculation:** More accurate balance management
+
+#### Enhanced Features:
+1. **Balance Separation:**
+   - `stakedDAARBalance` tracks staked DAAR separately
+   - Prevents reward calculation errors
+   - Cleaner excess token withdrawal logic
+
+#### Technical Implementation:
+```solidity
+uint256 public stakedDAARBalance;        // Tracks staked DAAR balance for reward calculation
+
+// Update staked balance on stake/unstake
+stakedDAARBalance += amount; // on stake
+stakedDAARBalance -= amount; // on unstake
+
+// Reward calculation uses staked balance
+uint256 reward = currentBalance > stakedDAARBalance ? currentBalance - stakedDAARBalance : 0;
+```
+
+---
+
+## 🎯 DAAR Distributor Contract (DAARDistributor.sol)
+
+### Version 2.9 → 3.0a (Initial Implementation)
+**Commit:** `73222fdd4d8fd140f549095c55dc9456c32df1d3` - v3.0a official release
+**Date:** March 29, 2025
+
+#### Core Features:
+- **Base Architecture:** UUPS upgradeable contract
+- **Libraries Introduced:**
+  - `@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol`
+  - `@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol`
+  - `@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol`
+
+#### Key Functionality:
+- DAARION staking for DAAR rewards
+- Automatic reward pool updates
+- Balance-based reward detection
+- Excess token withdrawal for wallet1
+
+#### Technical Implementation:
+```solidity
+struct Stake {
+    uint256 amount;       // Amount of DAARION staked
+    uint256 rewardDebt;   // Reward debt
+    uint256 rewardCredit; // Accumulated rewards
+}
+
+function _updatePool() internal {
+    uint256 currentBalance = DAAR.balanceOf(address(this));
+    uint256 reward = currentBalance - lastRewardBalance;
+    if (totalStakedDAARION > 0 && reward > 0) {
+        accRewardPerShare += (reward * 1e12) / totalStakedDAARION;
+        lastRewardBalance = currentBalance;
+    }
+}
+```
+
+### Version 4.0 Alpha (Epoch System Introduction)
+**Commit:** `bbe6facf68010d79b3fbe09aa23427ad526c3b2d` - v4.0 alpha release
+**Date:** May 1, 2025
+
+#### Major Changes:
+- **New Library Added:** `@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol`
+- **Architecture Change:** Continuous rewards → Epoch-based distribution
+
+#### Enhanced Features:
+1. **Epoch System:**
+   - Time-based reward distribution periods
+   - Manual epoch triggering by owner
+   - Better reward management control
+
+2. **Enhanced Security:**
+   - Pausable functionality
+   - Multiple token withdrawal support
+   - Better error handling
+
+#### Technical Implementation:
+```solidity
+uint256 public epochDuration;      // Duration of each epoch in seconds
+uint256 public lastEpochTimestamp; // Timestamp of the last epoch distribution
+mapping(uint256 => uint256) public epochRewards; // DAAR rewards per epoch
+
+function triggerEpochDistribution() external onlyOwner {
+    require(block.timestamp >= lastEpochTimestamp + epochDuration, "Epoch not ended");
+    _updatePool();
+    lastRewardBalance = DAAR.balanceOf(address(this));
+    lastEpochTimestamp = block.timestamp;
+}
+```
+
+### Version 4.0 RC1 (Manual Distribution System)
+**Commit:** `de326abb30d39fe14ed8e570873af60a8e9af43a` - v4.0rc1
+**Date:** May 1, 2025
+
+#### Major Changes:
+- **Library Removed:** `PausableUpgradeable` (simplified architecture)
+- **Distribution Model:** Automatic → Manual owner-controlled distribution
+
+#### Enhanced Features:
+1. **Manual Distribution:**
+   - Owner specifies recipients and amounts
+   - Flexible reward allocation
+   - Better control over distribution logic
+
+2. **Simplified Architecture:**
+   - Removed pausable functionality
+   - Streamlined contract structure
+   - Focus on core distribution functionality
+
+#### Technical Implementation:
+```solidity
+struct Stake {
+    uint256 amount;           // Amount of DAARION staked
+    uint256 lastClaimedEpoch; // Epoch when rewards were last claimed
+}
+
+function distributeRewards(address[] calldata recipients, uint256[] calldata amounts) external onlyOwner {
+    require(recipients.length == amounts.length, "Array length mismatch");
+    require(block.timestamp >= lastEpochTimestamp + epochDuration, "Epoch not ended");
+    
+    uint256 currentEpoch = getCurrentEpoch();
+    for (uint256 i = 0; i < recipients.length; i++) {
+        require(DAAR.transfer(recipients[i], amounts[i]), "DAAR transfer failed");
+        stakes[recipients[i]].lastClaimedEpoch = currentEpoch;
+    }
+}
+```
+
+### Version 4.0 Final (Simplified Structure)
+**Commit:** `da2931affbeec147207df1f4d999cd870cc40d54` - DAARsales added
+**Date:** May 29, 2025
+
+#### Major Changes:
+- **Function Rename:** `getPendingRewards` → `getPendingRewardsDAARDistributor`
+- **Code Cleanup:** Removed detailed comments, streamlined structure
+
+#### Final Features:
+- Manual epoch-based distribution
+- Owner-controlled reward allocation
+- Simplified but robust architecture
+- Clean, production-ready code
+
+---
+
+## 📊 Version Summary & Evolution
+
+| Version | Date | Key Innovation | Primary Focus |
+|---------|------|----------------|---------------|
+| **v2.9-3.0a** | Mar 29, 2025 | UUPS Upgradeable Architecture | Foundation & Basic Functionality |
+| **v4.0α** | May 1, 2025 | Dual Staking + Pausable | Enhanced Features & Security |
+| **v4.0 RC1** | May 1, 2025 | APR Logic + Manual Distribution | Mathematical Precision & Control |
+| **v4.0 Final** | May 29, 2025 | Balance Tracking + Cleanup | Production Optimization |
+
+## 🛠️ Technical Stack Evolution
+
+### OpenZeppelin Dependencies:
+- **Core:** `Initializable`, `UUPSUpgradeable`, `OwnableUpgradeable`
+- **Security:** `ReentrancyGuardUpgradeable`, `PausableUpgradeable` (v4.0α only)
+- **Token:** `ERC20Upgradeable`
+
+### Key Architectural Decisions:
+1. **UUPS Proxy Pattern:** Allows upgrades while maintaining state
+2. **Mathematical Precision:** 1e12 scaling for reward calculations
+3. **Separation of Concerns:** Distinct contracts for different functionalities
+4. **Owner-Controlled Systems:** Security through centralized control
+5. **Gas Optimization:** Efficient storage patterns and minimal operations
+
+## 🎯 Current Ecosystem State (v4.0 Final)
+
+### Deployed Contracts:
+- **DAAR:** `0x5aF82259455a963eC20Ea92471f55767B5919E38`
+- **DAARION:** `0x8Fe60b6F2DCBE68a1659b81175C665EB94015B16`
+- **APRStaking:** `0xe9a321c213d837379ebD7027CE685B62dFDb8c3b`
+- **DAARDistributor:** `0x605F5F73536ab6099ADc4381A3713Eab73384BE5`
+- **DAARsales:** `0x3F9b12c4Af72c030F0A0089E50b52ea59c56DDE4`
+- **DAARIONsales:** `0x1f25Fd60F5Ba29dC6f014148A156A6386918Df3f`
+
+### Current Functionality:
+1. **Token Trading:** DAAR ↔ USD, DAAR ↔ DAARION
+2. **Staking Rewards:** 4% APR (DAARION), 20% APR (DAAR)
+3. **Distribution System:** Manual epoch-based DAAR rewards
+4. **Full Upgradeability:** All contracts support UUPS upgrades
+
+---
+
+## 💰 DAARsales Contract (DAARsales.sol)
+
+### Version 4.0 Final (May 29, 2025)
+**Commit:** `da2931affbeec147207df1f4d999cd870cc40d54` - DAARsales added
+**Date:** May 29, 2025
+
+#### Core Features:
+- **Base Architecture:** UUPS upgradeable contract
+- **Purpose:** Enable direct DAAR token purchases with USDT and POL
+- **Pricing:** Fixed rate of $10 USD per DAAR token
+- **Payment Methods:** USDT and POL (Polygon native token)
+
+#### Key Functionality:
+- Real-time price feeds via Chainlink oracles
+- Slippage protection for price stability
+- Multi-token payment support (USDT, POL)
+- Pause/unpause functionality for emergency control
+- Direct fiat-to-crypto gateway integration
+
+#### Technical Implementation:
+```solidity
+// Fixed DAAR price in USD (with 8 decimals like Chainlink)
+uint256 public constant DAAR_PRICE_USD = 10_00000000; // $10.00
+
+// Chainlink price feed addresses
+address public constant USDT_USD_FEED = 0x0A6513e40db6EB1b165753AD52E80663aeA50545;
+address public constant POL_USD_FEED = 0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
+
+function buyDAARWithUSDT(uint256 usdtAmount, uint256 minDAARAmount) external;
+function buyDAARWithPOL(uint256 minDAARAmount) external payable;
+function calculateDAARAmount(address paymentToken, uint256 paymentAmount) external view returns (uint256);
+```
+
+---
+
+## 💎 DAARIONsales Contract (DAARIONsales.sol)
+
+### Version 4.0 Final (December 2024)
+**Deployment Date:** December 2024
+**Contract Address:** `0x1f25Fd60F5Ba29dC6f014148A156A6386918Df3f`
+
+#### Core Features:
+- **Base Architecture:** UUPS upgradeable contract
+- **Purpose:** Enable DAARION token purchases exclusively with DAAR tokens
+- **Pricing:** Fixed rate of 100 DAAR per 1 DAARION
+- **Access Control:** Restricted to DAAR token holders only
+
+#### Key Functionality:
+- Fixed exchange rate (1 DAARION = 100 DAAR)
+- DAAR-only payment method (maintains ecosystem coherence)
+- Built-in slippage protection (2%)
+- Emergency pause functionality
+- Direct smart contract integration
+
+#### Technical Implementation:
+```solidity
+// Fixed exchange rate: 100 DAAR per 1 DAARION
+uint256 public daarionRate = 100e18; // 100 DAAR per DAARION
+
+// Core purchase function
+function buyDAARION(uint256 daarAmount, uint256 minDAARIONAmount) external;
+
+// Price calculation
+function calculateDAARIONAmount(uint256 daarAmount) external view returns (uint256) {
+    return (daarAmount * 1e18) / daarionRate;
+}
+
+// Slippage protection built-in
+modifier nonZeroAmount(uint256 amount) {
+    require(amount > 0, "Amount must be greater than zero");
+    _;
+}
+```
+
+#### Economic Model:
+- **Entry Requirement:** Must hold DAAR tokens to purchase DAARION
+- **Value Proposition:** 1 DAARION = $1000 USD (100 DAAR × $10)
+- **Ecosystem Alignment:** Ensures DAARION buyers are already ecosystem participants
+- **Scarcity Mechanism:** Limited DAARION supply (8,000 tokens total)
+
+---
+
+## 🔄 Sales Contract Ecosystem Integration
+
+### DAARsales → DAARIONsales Flow:
+```
+Fiat/Crypto → USDT/POL → DAARsales → DAAR → DAARIONsales → DAARION
+    ↓             ↓          ↓        ↓         ↓           ↓
+External    Polygon    $10 USD   100:1    Premium      Investment
+Markets     Network    per DAAR   Rate     Access        Token
+```
+
+### Use Cases:
+1. **New Users:** USDT/POL → DAAR (via DAARsales) → Ecosystem Access
+2. **DAAR Holders:** DAAR → DAARION (via DAARIONsales) → Premium Benefits  
+3. **Investors:** Multi-step: Fiat → DAAR → DAARION → Staking Rewards
+
+### Current Functionality:
+1. **Token Trading:** USDT/POL ↔ DAAR, DAAR ↔ DAARION
+2. **Staking Rewards:** 4% APR (DAARION), 20% APR (DAAR)
+3. **Distribution System:** Manual epoch-based DAAR rewards
+4. **Full Upgradeability:** All contracts support UUPS upgrades
+
+---
+
+*Last Updated: December 2024 - Based on successful DAARIONsales deployment `0x1f25Fd60F5Ba29dC6f014148A156A6386918Df3f`*

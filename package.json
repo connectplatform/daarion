@@ -1,7 +1,7 @@
 {
   "name": "daarion-token",
-  "version": "2.0.0",
-  "description": "This README provides a comprehensive overview and guide to the DAAR and DAARION smart contracts, ensuring clarity and understanding for developers, stakeholders, and participants.",
+  "version": "4.0.1",
+  "description": "DAARION ecosystem smart contracts.",
   "main": "hardhat.config.js",
   "directories": {
     "test": "test"
@@ -24,14 +24,19 @@
   },
   "homepage": "https://github.com/connectplatform/daarion#readme",
   "devDependencies": {
+    "@chainlink/contracts": "^1.3.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@nomiclabs/hardhat-etherscan": "^3.1.8",
-    "@openzeppelin/contracts-upgradeable": "^5.2.0",
+    "@openzeppelin/contracts": "^5.3.0",
+    "@openzeppelin/contracts-upgradeable": "^5.3.0",
     "@openzeppelin/hardhat-upgrades": "^3.9.0",
-    "@safe-global/api-kit": "^2.3.0",
-    "@safe-global/protocol-kit": "^5.1.0",
-    "dotenv": "^16.4.7",
-    "ethers": "^6.13.5",
-    "hardhat": "^2.22.19",
-    "hardhat-abi-exporter": "^2.10.1"
+    "@safe-global/api-kit": "^3.0.1",
+    "@safe-global/protocol-kit": "^6.0.3",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-periphery": "^1.4.4",
+    "dotenv": "^16.5.0",
+    "ethers": "^6.14.0",
+    "hardhat": "^2.23.0",
+    "hardhat-abi-exporter": "^2.11.0"
   }
 }
