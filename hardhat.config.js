@@ -1,6 +1,5 @@
-require('@nomicfoundation/hardhat-ethers');
+require('@nomicfoundation/hardhat-toolbox');
 require('@openzeppelin/hardhat-upgrades');
-require('@nomiclabs/hardhat-etherscan');
 require('dotenv').config({ path: '.env.local' });
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -9,13 +8,26 @@ const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
 
 module.exports = {
   solidity: {
-    version: "0.8.26",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.26",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
-    },
+      {
+        version: "0.7.6", // Compatible with Uniswap libraries requiring <0.8.0
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
   },
   paths: {
     sources: "./contracts",
